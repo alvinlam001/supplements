@@ -914,25 +914,33 @@ async function apiCall(action, body) {
   const secret = cfg.secret;
   if (!url || !secret) throw new Error('Not configured');
 
-  let fetchUrl;
-
+  // GET for ping and read (no body needed, no CORS issue)
   if (action === 'ping' || action === 'read') {
-    fetchUrl = `${url}?action=${action}&secret=${encodeURIComponent(secret)}`;
-  } else if (action === 'write') {
-    // Encode supplements as JSON in URL param — all GET, no CORS preflight
-    const dataStr = encodeURIComponent(JSON.stringify(body.supplements || []));
-    fetchUrl = `${url}?action=write&secret=${encodeURIComponent(secret)}&data=${dataStr}`;
-  } else {
-    throw new Error('Unknown action: ' + action);
+    const res = await fetch(
+      `${url}?action=${action}&secret=${encodeURIComponent(secret)}`,
+      { method: 'GET', redirect: 'follow' }
+    );
+    const text = await res.text();
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Invalid response from script.');
+    const data = JSON.parse(match[0]);
+    if (data.error) throw new Error(data.error);
+    return data;
   }
 
-  const res = await fetch(fetchUrl, { method: 'GET', redirect: 'follow' });
+  // POST with text/plain for writes — avoids CORS preflight on all browsers
+  // including iPhone Safari, while allowing large payloads
+  const payload = JSON.stringify({ action, secret, ...body });
+  const res = await fetch(url, {
+    method: 'POST',
+    redirect: 'follow',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: payload
+  });
   const text = await res.text();
-
-  // Strip any HTML wrapping that Apps Script sometimes adds
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error('No JSON in response. Check your script is deployed correctly.');
-  const data = JSON.parse(jsonMatch[0]);
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('Invalid response from script.');
+  const data = JSON.parse(match[0]);
   if (data.error) throw new Error(data.error);
   return data;
 }
