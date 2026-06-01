@@ -13,7 +13,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 header{background:var(--ink);color:var(--paper);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 header h1{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;letter-spacing:-0.3px}
 header .subtitle{font-size:11px;opacity:0.5;font-weight:300;letter-spacing:0.5px;text-transform:uppercase}
-.sync-dot{width:8px;height:8px;border-radius:50%;background:#666;display:inline-block;margin-right:5px;vertical-align:middle}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#666;display:inline-block;margin-right:5px;vertical-align:middle;flex-shrink:0}
 .sync-dot.green{background:#4ade80}.sync-dot.amber{background:#fbbf24}.sync-dot.red{background:#f87171}
 nav{background:var(--paper);border-bottom:1px solid var(--border);display:flex;padding:0 20px;overflow-x:auto}
 nav button{background:none;border:none;padding:13px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--ink-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s}
@@ -23,24 +23,23 @@ main{max-width:980px;margin:0 auto;padding:24px 18px}
 .section{display:none}.section.active{display:block}
 
 /* SETUP WIZARD */
-.wizard{background:var(--paper);border:2px solid var(--slate);border-radius:var(--radius);padding:28px;max-width:600px;margin:40px auto}
-.wizard h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:6px}
+.wizard{background:var(--paper);border:2px solid var(--slate);border-radius:var(--radius);padding:28px;max-width:560px;margin:40px auto}
+.wizard h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:8px}
 .wizard .sub{font-size:13px;color:var(--ink-muted);margin-bottom:24px;line-height:1.6}
 .step{display:flex;gap:14px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
 .step:last-of-type{border-bottom:none;margin-bottom:24px}
 .step-num{width:28px;height:28px;border-radius:50%;background:var(--slate);color:white;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
 .step-body{flex:1}
 .step-body strong{font-size:14px;font-weight:500;display:block;margin-bottom:4px}
-.step-body p{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:8px}
-.step-body a{color:var(--slate);font-weight:500}
+.step-body p{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:6px}
 .step-body code{background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:12px;font-family:monospace}
-.wizard-inputs{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.wizard-inputs{display:flex;flex-direction:column;gap:10px;margin-top:6px}
 .wizard-inputs input{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);width:100%}
 .wizard-inputs input:focus{outline:none;border-color:var(--slate);background:var(--paper)}
-.btn-wizard{background:var(--slate);color:white;border:none;border-radius:8px;padding:11px 28px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin-top:8px;width:100%}
+.btn-wizard{background:var(--slate);color:white;border:none;border-radius:8px;padding:11px 28px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin-top:8px;width:100%;transition:opacity .15s}
 .btn-wizard:hover{opacity:.88}
-.wizard-err{font-size:12px;color:var(--rose);margin-top:6px;display:none}
-.wizard-testing{font-size:12px;color:var(--slate);margin-top:6px;display:none}
+.wizard-err{font-size:12px;color:var(--rose);margin-top:8px;padding:8px 12px;background:var(--rose-light);border-radius:6px;display:none;line-height:1.5}
+.wizard-testing{font-size:12px;color:var(--slate);margin-top:8px;display:none}
 
 /* FORM */
 .form-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:18px}
@@ -73,8 +72,7 @@ main{max-width:980px;margin:0 auto;padding:24px 18px}
 .toggle-switch input:checked+.toggle-track .toggle-thumb{transform:translateX(20px)}
 .btn-add{margin-top:20px;background:var(--ink);color:var(--paper);border:none;border-radius:8px;padding:11px 28px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:opacity .15s}
 .btn-add:hover{opacity:.85}
-.msg{margin-top:10px;font-size:13px}
-.msg.ok{color:var(--teal)}.msg.err{color:var(--rose)}
+.msg{margin-top:10px;font-size:13px}.msg.ok{color:var(--teal)}.msg.err{color:var(--rose)}
 
 /* SCHEDULE */
 .time-block{margin-bottom:28px}
@@ -84,7 +82,7 @@ main{max-width:980px;margin:0 auto;padding:24px 18px}
 .time-title{font-family:'DM Serif Display',serif;font-size:17px;font-weight:400}
 .time-count{font-size:11px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:500}
 .sched-table-wrap{overflow-x:auto}
-.sched-table{width:100%;min-width:680px;border-collapse:collapse;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;table-layout:fixed}
+.sched-table{width:100%;min-width:640px;border-collapse:collapse;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;table-layout:fixed}
 .sched-table th{background:var(--cream);padding:9px 12px;text-align:left;font-size:11px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border)}
 .sched-table td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:13px;line-height:1.5}
 .sched-table tr:last-child td{border-bottom:none}
@@ -107,15 +105,12 @@ main{max-width:980px;margin:0 auto;padding:24px 18px}
 .timing-chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500;margin:2px 2px 2px 0}
 .chip-fasted{background:var(--teal-light);color:var(--teal)}.chip-breakfast{background:var(--amber-light);color:var(--amber)}.chip-lunch{background:var(--slate-light);color:var(--slate)}.chip-dinner{background:var(--rose-light);color:var(--rose)}.chip-bed{background:var(--violet-light);color:var(--violet)}
 
-/* TOAST */
 #app-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;z-index:9999;transition:opacity .3s;box-shadow:0 4px 20px rgba(0,0,0,.18);max-width:90vw;text-align:center;opacity:0;pointer-events:none}
-
-/* SYNCING SPINNER */
-.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 @media print{
-  header,.print-hide,nav,.btn-add,.btn-del,.btn-sm,#sec-add,#sec-inventory,.notice,.wizard{display:none!important}
+  header,nav,.btn-add,.btn-del,.btn-sm,#sec-add,#sec-inventory,.notice,.wizard,#setup-wizard{display:none!important}
   #sec-schedule{display:block!important}
   body{background:white;font-size:12px}
   main{padding:0;max-width:100%}
@@ -124,27 +119,27 @@ main{max-width:980px;margin:0 auto;padding:24px 18px}
   .time-block{page-break-inside:avoid;margin-bottom:16px}
 }
 @media(max-width:600px){
-  header{padding:14px 16px}
-  header h1{font-size:18px}
+  header{padding:14px 16px}header h1{font-size:18px}
   main{padding:16px 12px}
-  .form-grid{grid-template-columns:1fr}
-  .form-grid-3{grid-template-columns:1fr 1fr}
-  .sched-table{min-width:540px}
-  .wizard{margin:20px auto;padding:20px}
+  .form-grid{grid-template-columns:1fr}.form-grid-3{grid-template-columns:1fr 1fr}
+  .sched-table{min-width:520px}
+  .wizard{margin:16px auto;padding:18px}
 }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div>
     <h1>Supplement Scheduler</h1>
     <div class="subtitle">Daily wellness tracker</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <span id="sync-status" style="font-size:12px;opacity:.8;white-space:nowrap"><span class="sync-dot" id="sync-dot"></span><span id="sync-label">Not connected</span></span>
-    <button onclick="manualSync()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap" id="sync-btn">↻ Sync now</button>
+    <span style="font-size:12px;opacity:.85;display:flex;align-items:center;white-space:nowrap">
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="sync-label">Not connected</span>
+    </span>
+    <button id="sync-btn" onclick="manualSync()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">↻ Sync now</button>
     <button onclick="openSettings()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">⚙ Settings</button>
     <button onclick="window.print()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">🖨 Print</button>
   </div>
@@ -160,59 +155,44 @@ main{max-width:980px;margin:0 auto;padding:24px 18px}
 
 <main>
 
-<!-- SETUP WIZARD (shown when not configured) -->
+<!-- SETUP WIZARD -->
 <div id="setup-wizard" style="display:none">
   <div class="wizard">
     <h2>Connect Google Sheets sync</h2>
-    <p class="sub">Your supplements will be saved to a Google Sheet you own — syncing automatically across every device. One-time setup takes about 5 minutes.</p>
+    <p class="sub">Enter your Apps Script Web App URL and the secret you set in the script. Your data will sync automatically across all your devices.</p>
 
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
-        <strong>Create a Google Sheet</strong>
-        <p>Go to <a href="https://sheets.google.com" target="_blank">sheets.google.com</a> and create a new blank spreadsheet. Name it <code>Supplement Scheduler</code>. Copy the Sheet ID from the URL — it's the long string between <code>/d/</code> and <code>/edit</code>.</p>
+        <strong>Your Apps Script Web App URL</strong>
+        <p>This is the URL you got after deploying — it starts with <code>https://script.google.com/macros/s/...</code></p>
+        <div class="wizard-inputs">
+          <input type="text" id="setup-url" placeholder="https://script.google.com/macros/s/...">
+        </div>
       </div>
     </div>
 
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <strong>Get a Google API key</strong>
-        <p>Go to <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a> → Create a project → Enable the <strong>Google Sheets API</strong> → Go to <strong>Credentials</strong> → Create an <strong>API Key</strong>. Then click the key → under <strong>API restrictions</strong> select <strong>Google Sheets API</strong>.</p>
-        <p>Also go to <strong>Application restrictions</strong> → choose <strong>HTTP referrers</strong> → add <code>file://*</code> (for local file use).</p>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <strong>Make the Sheet accessible</strong>
-        <p>Back in your Google Sheet, click <strong>Share</strong> → <strong>Change to anyone with the link</strong> → set to <strong>Editor</strong>. This lets your API key read and write to it.</p>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-body">
-        <strong>Enter your credentials below</strong>
+        <strong>Your secret phrase</strong>
+        <p>The secret you set on line 6 of the script — e.g. <code>supplementscheduler2026</code></p>
         <div class="wizard-inputs">
-          <input type="text" id="setup-sheet-id" placeholder="Sheet ID (from the URL)">
-          <input type="text" id="setup-api-key" placeholder="Google API Key">
+          <input type="text" id="setup-secret" placeholder="Your secret phrase">
         </div>
-        <div id="wizard-err" class="wizard-err">Could not connect. Double-check your Sheet ID and API key, and make sure the sheet is shared as Editor.</div>
-        <div id="wizard-testing" class="wizard-testing">Testing connection…</div>
       </div>
     </div>
 
-    <button class="btn-wizard" onclick="saveSettings()">Connect & sync</button>
-    <p style="font-size:11px;color:var(--ink-muted);margin-top:12px;text-align:center">Your API key is stored only in this browser's local storage. It is never sent anywhere except directly to Google's API.</p>
+    <button class="btn-wizard" onclick="saveSettings()">Connect &amp; sync</button>
+    <div id="wizard-err" class="wizard-err"></div>
+    <div id="wizard-testing" class="wizard-testing">⏳ Testing connection…</div>
+    <p style="font-size:11px;color:var(--ink-muted);margin-top:14px;text-align:center;line-height:1.6">Your URL and secret are stored only in this browser's local storage.<br>They are never sent anywhere except directly to your own Google Script.</p>
   </div>
 </div>
 
-<!-- MAIN APP (hidden until configured) -->
+<!-- MAIN APP -->
 <div id="app-content" style="display:none">
 
-<!-- ADD -->
 <div id="sec-add" class="section active">
   <div class="form-card">
     <h2>Add a supplement</h2>
@@ -234,7 +214,7 @@ main{max-width:980px;margin:0 auto;padding:24px 18px}
     <div id="suggest-panel" style="display:none" class="suggest-panel">
       <div class="suggest-title">✦ Research-based recommendation — timing &amp; dosing auto-applied</div>
       <div id="suggest-body"></div>
-      <div style="margin-top:8px;font-size:11px;color:#0F6E56;font-style:italic">Timing has been auto-selected below. Adjust if needed.</div>
+      <div style="margin-top:8px;font-size:11px;color:#0F6E56;font-style:italic">Timing auto-selected below — adjust if needed.</div>
     </div>
 
     <div style="margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:12px">
@@ -263,7 +243,7 @@ main{max-width:980px;margin:0 auto;padding:24px 18px}
     </div>
 
     <div style="margin-top:16px">
-      <div style="font-size:11px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">When to take <span style="font-size:10px;font-style:italic;text-transform:none;font-weight:400">(auto-filled from research — adjust if needed)</span></div>
+      <div style="font-size:11px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">When to take <span style="font-size:10px;font-style:italic;text-transform:none;font-weight:400">(auto-filled — adjust if needed)</span></div>
       <div class="timing-row">
         <label class="timing-opt" id="lbl-fasted" onclick="toggleTiming(this,'fasted')"><input type="checkbox" value="fasted"> ☀️ Morning fasted</label>
         <label class="timing-opt" id="lbl-breakfast" onclick="toggleTiming(this,'breakfast')"><input type="checkbox" value="breakfast"> 🍳 With breakfast</label>
@@ -277,13 +257,11 @@ main{max-width:980px;margin:0 auto;padding:24px 18px}
   </div>
 </div>
 
-<!-- SCHEDULE -->
 <div id="sec-schedule" class="section">
   <div class="notice">Benefits and dosing suggestions reflect published scientific research. Always consult your healthcare provider before starting or changing any supplement regimen.</div>
   <div id="schedule-content"></div>
 </div>
 
-<!-- INVENTORY -->
 <div id="sec-inventory" class="section">
   <div id="inventory-content"></div>
 </div>
@@ -292,9 +270,9 @@ main{max-width:980px;margin:0 auto;padding:24px 18px}
 </main>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════════════════
-// SUPPLEMENT & BENEFITS DATABASES
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// DATABASES
+// ═══════════════════════════════════════════════════════════════════
 // ─── SUPPLEMENT DATABASE ───────────────────────────────────────────────────────
 // Schema: timing[] lists each slot where this supplement is taken.
 // doses{} maps each slot to its pill count for that slot.
@@ -921,21 +899,60 @@ function lookupSupp(name) {
   return null;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// GOOGLE SHEETS SYNC
-// ═══════════════════════════════════════════════════════════════════════════════
-const SHEET_NAME = 'Supplements';
-const HEADER_ROW = ['id','brand','name','dosage','bottlecount','purchasedate','pillsperdose','dosesperday','timings','dosesMap','trackBottle'];
-
+// ═══════════════════════════════════════════════════════════════════
+// CONFIG — stored in localStorage
+// ═══════════════════════════════════════════════════════════════════
 let cfg = {};
-try { cfg = JSON.parse(localStorage.getItem('supp_cfg') || '{}'); } catch(e) {}
+try { cfg = JSON.parse(localStorage.getItem('supp_cfg_v2') || '{}'); } catch(e) {}
+function saveCfg() { localStorage.setItem('supp_cfg_v2', JSON.stringify(cfg)); }
 
-function saveCfg() { localStorage.setItem('supp_cfg', JSON.stringify(cfg)); }
+// ═══════════════════════════════════════════════════════════════════
+// GOOGLE APPS SCRIPT API
+// ═══════════════════════════════════════════════════════════════════
+async function apiCall(action, body) {
+  const url = cfg.scriptUrl;
+  const secret = cfg.secret;
+  if (!url || !secret) throw new Error('Not configured');
 
-function sheetsUrl(path) {
-  return `https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetId}${path}?key=${cfg.apiKey}`;
+  // All requests use GET with params encoded in URL to avoid ALL CORS preflight issues.
+  // Apps Script GET requests with simple params are always allowed cross-origin.
+  // For writes, we encode the data as a URL param (base64) to stay as a simple GET.
+  if (action === 'read' || action === 'ping') {
+    const res = await fetch(
+      `${url}?action=${action}&secret=${encodeURIComponent(secret)}`,
+      { method: 'GET', redirect: 'follow' }
+    );
+    if (!res.ok) throw new Error('Request failed: ' + res.status);
+    const text = await res.text();
+    try {
+      const data = JSON.parse(text);
+      if (data.error) throw new Error(data.error);
+      return data;
+    } catch(e) {
+      throw new Error('Invalid response from script. Check your URL is correct.');
+    }
+  }
+
+  // For writes: encode payload as base64 in a GET param to avoid CORS preflight entirely
+  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({ action, secret, ...body }))));
+  const res = await fetch(
+    `${url}?payload=${encodeURIComponent(payload)}`,
+    { method: 'GET', redirect: 'follow' }
+  );
+  if (!res.ok) throw new Error('Request failed: ' + res.status);
+  const text = await res.text();
+  try {
+    const data = JSON.parse(text);
+    if (data.error) throw new Error(data.error);
+    return data;
+  } catch(e) {
+    throw new Error('Invalid response from script.');
+  }
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// SYNC STATUS UI
+// ═══════════════════════════════════════════════════════════════════
 function setStatus(state, label) {
   const dot = document.getElementById('sync-dot');
   const lbl = document.getElementById('sync-label');
@@ -943,237 +960,55 @@ function setStatus(state, label) {
   lbl.textContent = label;
 }
 
-// Ensure the Supplements sheet and header row exist
-async function ensureSheet() {
-  // Get sheet metadata
-  const meta = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetId}?key=${cfg.apiKey}`);
-  if (!meta.ok) throw new Error('Cannot access spreadsheet');
-  const metaData = await meta.json();
-  const sheets = metaData.sheets || [];
-  const exists = sheets.some(s => s.properties.title === SHEET_NAME);
-
-  if (!exists) {
-    // Create the sheet
-    await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetId}:batchUpdate`,
-      { method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${await getAccessToken()}` },
-        body: JSON.stringify({ requests: [{ addSheet: { properties: { title: SHEET_NAME } } }] })
-      });
-  }
-
-  // Check/write header
-  const hdr = await fetch(sheetsUrl(`/values/${SHEET_NAME}!A1:K1`));
-  const hdrData = await hdr.json();
-  const firstRow = (hdrData.values || [[]])[0] || [];
-  if (firstRow[0] !== 'id') {
-    await writeRange(`${SHEET_NAME}!A1:K1`, [HEADER_ROW]);
-  }
-}
-
-// Get OAuth2 access token using the API key approach (service account not needed —
-// we use the Sheets API with an API key for read, and for writes we use the
-// user's own Google account via OAuth2 implicit flow stored in cfg.accessToken)
-async function getAccessToken() {
-  // If we have a valid token return it
-  if (cfg.accessToken && cfg.tokenExpiry && Date.now() < cfg.tokenExpiry) {
-    return cfg.accessToken;
-  }
-  // Trigger OAuth2 popup
-  return new Promise((resolve, reject) => {
-    const clientId = cfg.clientId;
-    if (!clientId) { reject(new Error('No client ID')); return; }
-    const redirect = encodeURIComponent('postmessage');
-    const scope = encodeURIComponent('https://www.googleapis.com/auth/spreadsheets');
-    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=postmessage&response_type=token&scope=${scope}`;
-    const popup = window.open(url, 'oauth', 'width=500,height=600');
-    const handler = (e) => {
-      if (e.source !== popup) return;
-      const params = new URLSearchParams(e.data);
-      const token = params.get('access_token');
-      if (token) {
-        cfg.accessToken = token;
-        cfg.tokenExpiry = Date.now() + (parseInt(params.get('expires_in') || 3600) - 60) * 1000;
-        saveCfg();
-        resolve(token);
-      } else {
-        reject(new Error('Auth failed'));
-      }
-      window.removeEventListener('message', handler);
-    };
-    window.addEventListener('message', handler);
-    setTimeout(() => { window.removeEventListener('message', handler); reject(new Error('Auth timeout')); }, 120000);
-  });
-}
-
-async function writeRange(range, values) {
-  const token = await getAccessToken();
-  const res = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetId}/values/${encodeURIComponent(range)}?valueInputOption=RAW&key=${cfg.apiKey}`,
-    { method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ range, majorDimension: 'ROWS', values })
-    }
-  );
-  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || 'Write failed'); }
-}
-
-async function appendRow(values) {
-  const token = await getAccessToken();
-  const res = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetId}/values/${encodeURIComponent(SHEET_NAME)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS&key=${cfg.apiKey}`,
-    { method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ values: [values] })
-    }
-  );
-  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || 'Append failed'); }
-}
-
-async function clearAndRewrite(rows) {
-  const token = await getAccessToken();
-  // Clear everything except header
-  await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${cfg.sheetId}/values/${encodeURIComponent(SHEET_NAME + '!A2:Z')}/clear?key=${cfg.apiKey}`,
-    { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: '{}' }
-  );
-  if (rows.length === 0) return;
-  await writeRange(`${SHEET_NAME}!A2:K${rows.length + 1}`, rows);
-}
-
-function suppToRow(s) {
-  return [
-    String(s.id),
-    s.brand || '',
-    s.name || '',
-    s.dosage || '',
-    s.bottlecount != null ? String(s.bottlecount) : '',
-    s.purchasedate || '',
-    s.pillsperdose != null ? String(s.pillsperdose) : '',
-    s.dosesperday != null ? String(s.dosesperday) : '',
-    JSON.stringify(s.timings || []),
-    JSON.stringify(s.dosesMap || {}),
-    s.trackBottle ? 'true' : 'false'
-  ];
-}
-
-function rowToSupp(row) {
-  const [id,brand,name,dosage,bottlecount,purchasedate,pillsperdose,dosesperday,timings,dosesMap,trackBottle] = row;
-  return {
-    id: parseInt(id) || Date.now(),
-    brand: brand || '',
-    name: name || '',
-    dosage: dosage || '',
-    bottlecount: bottlecount ? parseInt(bottlecount) : null,
-    purchasedate: purchasedate || null,
-    pillsperdose: pillsperdose ? parseInt(pillsperdose) : 1,
-    dosesperday: dosesperday ? parseInt(dosesperday) : 1,
-    timings: (() => { try { return JSON.parse(timings); } catch(e) { return []; } })(),
-    dosesMap: (() => { try { return JSON.parse(dosesMap); } catch(e) { return {}; } })(),
-    trackBottle: trackBottle === 'true'
-  };
-}
-
-// READ all supplements from Sheet
-async function readFromSheet() {
-  const res = await fetch(sheetsUrl(`/values/${SHEET_NAME}!A2:K`));
-  if (!res.ok) throw new Error('Read failed');
-  const data = await res.json();
-  const rows = data.values || [];
-  return rows.filter(r => r[0] && r[2]).map(rowToSupp);
-}
-
-// PUSH local supplements to sheet (full overwrite after header)
-async function pushToSheet() {
-  setStatus('busy', 'Saving…');
-  await ensureSheet();
-  await clearAndRewrite(supplements.map(suppToRow));
-  cfg.lastSync = new Date().toISOString();
-  saveCfg();
-  setStatus('ok', 'Synced ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
-}
-
-// PULL from sheet and merge into local
-async function pullFromSheet() {
-  setStatus('busy', 'Loading…');
-  const remote = await readFromSheet();
-  if (remote.length > 0) {
-    supplements = remote;
-    saveLocal();
-  }
-  cfg.lastSync = new Date().toISOString();
-  saveCfg();
-  setStatus('ok', 'Synced ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
-  return remote;
-}
-
-// Full sync: pull from sheet (remote wins as source of truth)
-async function syncWithSheet() {
-  try {
-    await pullFromSheet();
-    renderCurrentTab();
-  } catch(err) {
-    setStatus('red', 'Sync error');
-    console.error('Sync error:', err);
-    showToast('Sync failed: ' + err.message, 'err');
-  }
-}
-
-async function manualSync() {
-  if (!cfg.sheetId || !cfg.apiKey) { openSettings(); return; }
-  const btn = document.getElementById('sync-btn');
-  btn.innerHTML = '<span class="spin"></span>Syncing…';
-  btn.disabled = true;
-  try {
-    await syncWithSheet();
-    showToast('✓ Synced with Google Sheets', 'ok');
-  } catch(e) {
-    showToast('Sync failed: ' + e.message, 'err');
-  }
-  btn.innerHTML = '↻ Sync now';
-  btn.disabled = false;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// SETTINGS PANEL
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS / WIZARD
+// ═══════════════════════════════════════════════════════════════════
 function openSettings() {
+  const urlField = document.getElementById('setup-url');
+  const secretField = document.getElementById('setup-secret');
+  const err = document.getElementById('wizard-err');
+  const testing = document.getElementById('wizard-testing');
+  if (urlField && cfg.scriptUrl) urlField.value = cfg.scriptUrl;
+  if (secretField && cfg.secret) secretField.value = cfg.secret;
+  if (err) err.style.display = 'none';
+  if (testing) testing.style.display = 'none';
   document.getElementById('setup-wizard').style.display = '';
   document.getElementById('app-content').style.display = 'none';
-  if (cfg.sheetId) document.getElementById('setup-sheet-id').value = cfg.sheetId;
-  if (cfg.apiKey) document.getElementById('setup-api-key').value = cfg.apiKey;
-  if (cfg.clientId) {
-    // Add client ID field if not there
-    const inp = document.getElementById('setup-client-id');
-    if (inp) inp.value = cfg.clientId;
-  }
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 async function saveSettings() {
-  const sheetId = document.getElementById('setup-sheet-id').value.trim();
-  const apiKey = document.getElementById('setup-api-key').value.trim();
-  const clientId = document.getElementById('setup-client-id') ? document.getElementById('setup-client-id').value.trim() : cfg.clientId || '';
+  const url = document.getElementById('setup-url').value.trim();
+  const secret = document.getElementById('setup-secret').value.trim();
   const err = document.getElementById('wizard-err');
   const testing = document.getElementById('wizard-testing');
   err.style.display = 'none';
-  if (!sheetId || !apiKey) { err.textContent = 'Please enter both the Sheet ID and API key.'; err.style.display = 'block'; return; }
+
+  if (!url || !secret) {
+    err.textContent = 'Please enter both the Web App URL and your secret phrase.';
+    err.style.display = 'block'; return;
+  }
+  if (!url.startsWith('https://script.google.com/macros/s/')) {
+    err.textContent = 'That URL doesn\'t look right — it should start with https://script.google.com/macros/s/';
+    err.style.display = 'block'; return;
+  }
 
   testing.style.display = 'block';
+  cfg.scriptUrl = url;
+  cfg.secret = secret;
+
   try {
-    // Test read access
-    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?key=${apiKey}`);
-    if (!res.ok) throw new Error('Cannot access sheet — check ID and API key');
-    cfg.sheetId = sheetId;
-    cfg.apiKey = apiKey;
-    if (clientId) cfg.clientId = clientId;
+    const res = await apiCall('ping', {});
+    if (!res.ok) throw new Error('Unexpected response');
     saveCfg();
     testing.style.display = 'none';
     launchApp();
-    showToast('✓ Connected to Google Sheets!', 'ok');
-    // Try initial sync
-    try { await syncWithSheet(); } catch(e) { /* non-fatal on first load */ }
+    showToast('✓ Connected! Loading your supplements…', 'ok');
+    await pullAndRender();
   } catch(e) {
     testing.style.display = 'none';
-    err.textContent = e.message;
+    cfg.scriptUrl = ''; cfg.secret = '';
+    err.textContent = 'Connection failed: ' + e.message + '. Check your URL and secret phrase match exactly what\'s in the script.';
     err.style.display = 'block';
   }
 }
@@ -1184,52 +1019,86 @@ function launchApp() {
   setStatus('ok', 'Connected');
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
 // LOCAL STATE
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
 const TIME_LABELS = { fasted:'Morning fasted', breakfast:'With breakfast', lunch:'With lunch', dinner:'With dinner', bed:'Before bed' };
-const TIME_ICONS = { fasted:'☀️', breakfast:'🍳', lunch:'🥗', dinner:'🌙', bed:'💤' };
-const TIME_ORDER = ['fasted','breakfast','lunch','dinner','bed'];
+const TIME_ICONS  = { fasted:'☀️', breakfast:'🍳', lunch:'🥗', dinner:'🌙', bed:'💤' };
+const TIME_ORDER  = ['fasted','breakfast','lunch','dinner','bed'];
 
 let supplements = [];
 try { supplements = JSON.parse(localStorage.getItem('supp_sched_v5') || '[]'); } catch(e) {}
-
 function saveLocal() { try { localStorage.setItem('supp_sched_v5', JSON.stringify(supplements)); } catch(e) {} }
 
+// Save locally AND push to sheet
 async function save() {
   saveLocal();
-  if (cfg.sheetId && cfg.apiKey) {
-    try { await pushToSheet(); }
-    catch(e) { setStatus('red', 'Sync error'); console.error(e); }
+  if (!cfg.scriptUrl) return;
+  setStatus('busy', 'Saving…');
+  try {
+    await apiCall('write', { supplements });
+    setStatus('ok', 'Saved ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+  } catch(e) {
+    setStatus('red', 'Save failed');
+    showToast('Save failed: ' + e.message, 'err');
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+async function pullAndRender() {
+  setStatus('busy', 'Loading…');
+  try {
+    const data = await apiCall('read', {});
+    if (data.supplements && data.supplements.length > 0) {
+      supplements = data.supplements;
+      saveLocal();
+    }
+    setStatus('ok', 'Synced ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+    renderCurrentTab();
+  } catch(e) {
+    setStatus('red', 'Sync error');
+    showToast('Sync failed: ' + e.message, 'err');
+  }
+}
+
+async function manualSync() {
+  if (!cfg.scriptUrl) { openSettings(); return; }
+  const btn = document.getElementById('sync-btn');
+  btn.innerHTML = '<span class="spin"></span>Syncing…';
+  btn.disabled = true;
+  try {
+    await pullAndRender();
+    showToast('✓ Synced with Google Sheets', 'ok');
+  } catch(e) {
+    showToast('Sync failed: ' + e.message, 'err');
+  }
+  btn.innerHTML = '↻ Sync now';
+  btn.disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // TOAST
-// ═══════════════════════════════════════════════════════════════════════════════
-function showToast(msg, type = 'ok') {
+// ═══════════════════════════════════════════════════════════════════
+function showToast(msg, type) {
   const t = document.getElementById('app-toast');
   t.textContent = msg;
   t.style.background = type === 'ok' ? '#1D6B5A' : type === 'err' ? '#8B2035' : '#2C4A6E';
-  t.style.color = 'white';
-  t.style.opacity = '1';
-  t.style.pointerEvents = 'auto';
+  t.style.color = 'white'; t.style.opacity = '1'; t.style.pointerEvents = 'auto';
   clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.style.opacity = '0'; t.style.pointerEvents = 'none'; }, 3500);
+  t._timer = setTimeout(() => { t.style.opacity='0'; t.style.pointerEvents='none'; }, 3500);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// UI HELPERS
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// UI — FORM
+// ═══════════════════════════════════════════════════════════════════
 let currentSuggestion = null;
 
-function getTotalDailyPills(entry) { return Object.values(entry.doses || {}).reduce((a,b) => a+b, 0); }
+function getTotalDailyPills(entry) { return Object.values(entry.doses||{}).reduce((a,b)=>a+b,0); }
 
 function applyEntryToForm(entry) {
-  document.querySelectorAll('.timing-opt').forEach(lbl => { lbl.querySelector('input').checked = false; lbl.className = 'timing-opt'; });
-  entry.timing.forEach(t => { const lbl = document.getElementById('lbl-'+t); if (lbl) { lbl.querySelector('input').checked = true; lbl.classList.add('checked-'+t); } });
+  document.querySelectorAll('.timing-opt').forEach(l => { l.querySelector('input').checked=false; l.className='timing-opt'; });
+  entry.timing.forEach(t => { const l=document.getElementById('lbl-'+t); if(l){l.querySelector('input').checked=true; l.classList.add('checked-'+t);} });
   if (document.getElementById('bottle-toggle').checked) {
-    document.getElementById('pillsperdose').value = entry.doses[entry.timing[0]] || 1;
+    document.getElementById('pillsperdose').value = entry.doses[entry.timing[0]]||1;
     document.getElementById('dosesperday').value = entry.timing.length;
   }
   if (!document.getElementById('dosage').value) document.getElementById('dosage').value = entry.typicalDosage;
@@ -1239,90 +1108,92 @@ function onSuppNameInput() {
   const name = document.getElementById('suppname').value.trim();
   const panel = document.getElementById('suggest-panel');
   if (name.length < 3) {
-    panel.style.display = 'none'; currentSuggestion = null;
-    document.querySelectorAll('.timing-opt').forEach(lbl => { lbl.querySelector('input').checked = false; lbl.className = 'timing-opt'; });
+    panel.style.display='none'; currentSuggestion=null;
+    document.querySelectorAll('.timing-opt').forEach(l=>{l.querySelector('input').checked=false; l.className='timing-opt';});
     return;
   }
   const entry = lookupSupp(name);
-  if (!entry) { panel.style.display = 'none'; currentSuggestion = null; return; }
-  if (!currentSuggestion || currentSuggestion !== entry) { currentSuggestion = entry; applyEntryToForm(entry); }
-  const timingNames = entry.timing.map(t => TIME_LABELS[t]).join(' · ');
-  const doseSlots = entry.timing.map(t => { const p = entry.doses[t]||1; return `${p} pill${p>1?'s':''} — ${TIME_LABELS[t]}`; }).join(' · ');
-  const total = getTotalDailyPills(entry);
+  if (!entry) { panel.style.display='none'; currentSuggestion=null; return; }
+  if (!currentSuggestion || currentSuggestion !== entry) { currentSuggestion=entry; applyEntryToForm(entry); }
+  const timingNames = entry.timing.map(t=>TIME_LABELS[t]).join(' · ');
+  const doseSlots = entry.timing.map(t=>{ const p=entry.doses[t]||1; return `${p} pill${p>1?'s':''} — ${TIME_LABELS[t]}`; }).join(' · ');
   document.getElementById('suggest-body').innerHTML = `
     <div class="suggest-row">
       <span class="suggest-badge">${timingNames}</span>
       <div>
-        <div class="suggest-text">${doseSlots} (${total} total/day)</div>
+        <div class="suggest-text">${doseSlots} (${getTotalDailyPills(entry)} total/day)</div>
         <div class="suggest-reason">${entry.timingReason}</div>
       </div>
     </div>`;
-  panel.style.display = '';
+  panel.style.display='';
 }
 
 function showTab(t, btn) {
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   if (btn) btn.classList.add('active');
   document.getElementById('sec-'+t).classList.add('active');
-  if (t === 'schedule') renderSchedule();
-  if (t === 'inventory') renderInventory();
+  if (t==='schedule') renderSchedule();
+  if (t==='inventory') renderInventory();
 }
 
 function renderCurrentTab() {
-  const active = document.querySelector('.section.active');
-  if (!active) return;
-  if (active.id === 'sec-schedule') renderSchedule();
-  if (active.id === 'sec-inventory') renderInventory();
+  const a = document.querySelector('.section.active');
+  if (!a) return;
+  if (a.id==='sec-schedule') renderSchedule();
+  if (a.id==='sec-inventory') renderInventory();
 }
 
 function toggleTiming(lbl, val) {
-  const cb = lbl.querySelector('input'); cb.checked = !cb.checked;
-  if (cb.checked) lbl.classList.add('checked-'+val); else lbl.classList.remove('checked-'+val);
+  const cb=lbl.querySelector('input'); cb.checked=!cb.checked;
+  if(cb.checked) lbl.classList.add('checked-'+val); else lbl.classList.remove('checked-'+val);
 }
 
 function toggleBottleFields() {
-  const on = document.getElementById('bottle-toggle').checked;
-  document.getElementById('bottle-fields').style.display = on ? '' : 'none';
-  document.getElementById('bottle-skipped').style.display = on ? 'none' : '';
+  const on=document.getElementById('bottle-toggle').checked;
+  document.getElementById('bottle-fields').style.display=on?'':'none';
+  document.getElementById('bottle-skipped').style.display=on?'none':'';
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
 // ADD SUPPLEMENT
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
 async function addSupplement() {
   const brand = document.getElementById('brand').value.trim();
-  const name = document.getElementById('suppname').value.trim();
+  const name  = document.getElementById('suppname').value.trim();
   const dosage = document.getElementById('dosage').value.trim() || (currentSuggestion ? currentSuggestion.typicalDosage : '');
   const trackBottle = document.getElementById('bottle-toggle').checked;
   const bottlecount = trackBottle ? (parseInt(document.getElementById('bottlecount').value)||0) : null;
   const purchasedate = trackBottle ? document.getElementById('purchasedate').value : null;
-  const timings = Array.from(document.querySelectorAll('.timing-opt input:checked')).map(c => c.value);
+  const timings = Array.from(document.querySelectorAll('.timing-opt input:checked')).map(c=>c.value);
   const dosesMap = {};
-  timings.forEach(t => { dosesMap[t] = (currentSuggestion?.doses?.[t]) || 1; });
-  const totalDailyPills = Object.values(dosesMap).reduce((a,b)=>a+b,0);
+  timings.forEach(t => { dosesMap[t] = currentSuggestion?.doses?.[t] || 1; });
+  const totalPills = Object.values(dosesMap).reduce((a,b)=>a+b,0);
+
   const msg = document.getElementById('add-msg');
   const missingBottle = trackBottle && (!bottlecount || !purchasedate);
-  if (!name || timings.length === 0 || missingBottle) {
-    msg.className = 'msg err';
-    if (!name) msg.textContent = 'Please enter the supplement name.';
-    else if (!timings.length) msg.textContent = 'Supplement not recognised — select a timing manually.';
-    else msg.textContent = 'Please fill in bottle details or turn off bottle tracking.';
-    msg.style.display = 'block'; setTimeout(() => msg.style.display='none', 3500); return;
+  if (!name || !timings.length || missingBottle) {
+    msg.className='msg err';
+    msg.textContent = !name ? 'Please enter the supplement name.'
+      : !timings.length ? 'Supplement not recognised — select a timing manually.'
+      : 'Please fill in bottle details or turn off bottle tracking.';
+    msg.style.display='block'; setTimeout(()=>msg.style.display='none',3500); return;
   }
-  const s = { id:Date.now(), brand, name, dosage, bottlecount, purchasedate, pillsperdose:totalDailyPills||1, dosesperday:1, timings, dosesMap, trackBottle };
-  supplements.push(s);
+
+  supplements.push({ id:Date.now(), brand, name, dosage, bottlecount, purchasedate,
+    pillsperdose:totalPills||1, dosesperday:1, timings, dosesMap, trackBottle });
   await save();
-  ['brand','suppname','dosage'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('suggest-panel').style.display = 'none'; currentSuggestion = null;
-  document.querySelectorAll('.timing-opt').forEach(lbl => { lbl.querySelector('input').checked = false; lbl.className = 'timing-opt'; });
+
+  ['brand','suppname','dosage'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('suggest-panel').style.display='none'; currentSuggestion=null;
+  document.querySelectorAll('.timing-opt').forEach(l=>{l.querySelector('input').checked=false; l.className='timing-opt';});
   if (trackBottle) { document.getElementById('bottlecount').value=''; document.getElementById('purchasedate').valueAsDate=new Date(); document.getElementById('pillsperdose').value='1'; document.getElementById('dosesperday').value='1'; }
-  msg.className = 'msg ok'; msg.textContent = name+' added and synced!'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',3000);
+  msg.className='msg ok'; msg.textContent=name+' added and synced!'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',3000);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// SCHEDULE RENDER
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// SCHEDULE
+// ═══════════════════════════════════════════════════════════════════
 function calcReorder(s) {
   if (!s.trackBottle||!s.bottlecount||!s.purchasedate) return {text:'Not tracked',cls:'reorder-pending'};
   const daily = s.dosesMap ? Object.values(s.dosesMap).reduce((a,b)=>a+b,0) : (s.pillsperdose||1)*(s.dosesperday||1);
@@ -1338,86 +1209,103 @@ function calcReorder(s) {
 
 function getRecCell(s, time) {
   const entry = lookupSupp(s.name);
-  const slotPills = s.dosesMap?.[time] || (entry?.doses?.[time]) || s.pillsperdose || 1;
-  const recPills = entry?.doses?.[time];
-  let html = `<div class="rec-pill-line">${slotPills} pill${slotPills!==1?'s':''}</div>`;
+  const pills = s.dosesMap?.[time] || entry?.doses?.[time] || s.pillsperdose || 1;
+  let html = `<div class="rec-pill-line">${pills} pill${pills!==1?'s':''}</div>`;
   if (entry) html += `<div class="rec-reason">${entry.typicalDosage}</div>`;
   return html;
 }
 
 function renderSchedule() {
   const el = document.getElementById('schedule-content');
-  if (!supplements.length) { el.innerHTML = '<div class="empty"><span class="icon">📋</span>No supplements yet. Go to "Add supplement" to get started.</div>'; return; }
-  let html = '';
+  if (!supplements.length) { el.innerHTML='<div class="empty"><span class="icon">📋</span>No supplements yet. Go to "Add supplement" to get started.</div>'; return; }
+  let html='';
   for (const time of TIME_ORDER) {
-    const items = supplements.filter(s => s.timings.includes(time));
+    const items = supplements.filter(s=>s.timings.includes(time));
     if (!items.length) continue;
-    html += `<div class="time-block"><div class="time-block-header"><div class="time-icon icon-${time}">${TIME_ICONS[time]}</div><span class="time-title">${TIME_LABELS[time]}</span><span class="time-count">&nbsp;·&nbsp;${items.length} supplement${items.length>1?'s':''}</span></div><div class="sched-table-wrap"><table class="sched-table"><colgroup><col style="width:18%"><col style="width:14%"><col style="width:34%"><col style="width:20%"></colgroup><thead><tr><th>Supplement</th><th>Dosing</th><th>Key benefits</th><th>Reorder date</th></tr></thead><tbody>`;
+    html += `<div class="time-block"><div class="time-block-header"><div class="time-icon icon-${time}">${TIME_ICONS[time]}</div><span class="time-title">${TIME_LABELS[time]}</span><span class="time-count">&nbsp;·&nbsp;${items.length} supplement${items.length>1?'s':''}</span></div><div class="sched-table-wrap"><table class="sched-table"><colgroup><col style="width:18%"><col style="width:13%"><col style="width:34%"><col style="width:21%"></colgroup><thead><tr><th>Supplement</th><th>Dosing</th><th>Key benefits</th><th>Reorder date</th></tr></thead><tbody>`;
     for (const s of items) {
-      const r = calcReorder(s);
-      html += `<tr><td><div class="supp-name-cell">${s.name}</div><div class="supp-brand-cell">${s.brand}</div>${s.dosage?`<div style="font-size:11px;color:var(--ink-muted);margin-top:2px">${s.dosage}</div>`:''}</td><td class="rec-cell">${getRecCell(s,time)}</td><td style="font-size:12px;color:var(--ink-soft);line-height:1.6">${getBenefits(s.name)}</td><td><span class="${r.cls}">${r.text}</span></td></tr>`;
+      const r=calcReorder(s);
+      html+=`<tr><td><div class="supp-name-cell">${s.name}</div><div class="supp-brand-cell">${s.brand}</div>${s.dosage?`<div style="font-size:11px;color:var(--ink-muted);margin-top:2px">${s.dosage}</div>`:''}</td><td class="rec-cell">${getRecCell(s,time)}</td><td style="font-size:12px;color:var(--ink-soft);line-height:1.6">${getBenefits(s.name)}</td><td><span class="${r.cls}">${r.text}</span></td></tr>`;
     }
-    html += '</tbody></table></div></div>';
+    html+='</tbody></table></div></div>';
   }
-  el.innerHTML = html;
+  el.innerHTML=html;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// INVENTORY RENDER
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// INVENTORY
+// ═══════════════════════════════════════════════════════════════════
 function renderInventory() {
-  const el = document.getElementById('inventory-content');
-  if (!supplements.length) { el.innerHTML = '<div class="empty"><span class="icon">📦</span>No supplements in inventory yet.</div>'; return; }
-  let html = `<div style="overflow-x:auto"><table class="inv-table" style="min-width:640px"><thead><tr><th style="width:18%">Supplement</th><th style="width:9%">Brand</th><th style="width:13%">Dosage</th><th style="width:12%">Bottle</th><th style="width:10%">Purchased</th><th style="width:18%">Schedule</th><th style="width:14%">Reorder</th><th style="width:6%"></th></tr></thead><tbody>`;
+  const el=document.getElementById('inventory-content');
+  if (!supplements.length) { el.innerHTML='<div class="empty"><span class="icon">📦</span>No supplements in inventory yet.</div>'; return; }
+  let html=`<div style="overflow-x:auto"><table class="inv-table" style="min-width:620px"><thead><tr><th style="width:18%">Supplement</th><th style="width:9%">Brand</th><th style="width:14%">Dosage</th><th style="width:11%">Bottle</th><th style="width:10%">Purchased</th><th style="width:18%">Schedule</th><th style="width:13%">Reorder</th><th style="width:7%"></th></tr></thead><tbody>`;
   for (const s of supplements) {
-    const r = calcReorder(s);
-    const chips = s.timings.map(t => `<span class="timing-chip chip-${t}">${TIME_LABELS[t]}</span>`).join('');
-    const entry = lookupSupp(s.name);
-    const recDosage = entry ? entry.typicalDosage : '—';
-    const bottleInfo = s.trackBottle && s.bottlecount
-      ? `${s.pillsperdose}p/day<br><span style="font-size:11px;color:var(--ink-muted)">${s.bottlecount}/bottle</span>`
-      : `<span style="font-size:12px;color:var(--ink-muted);font-style:italic">Not set</span><br><button class="btn-sm" style="margin-top:4px;font-size:11px;color:var(--teal);border-color:var(--teal)" onclick="showBottleForm(${s.id})">+ Add details</button>`;
-    const purchaseInfo = s.purchasedate ? new Date(s.purchasedate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '<span style="font-size:12px;color:var(--ink-muted)">—</span>';
-    html += `<tr id="inv-row-${s.id}"><td style="font-weight:500">${s.name}</td><td>${s.brand}</td><td><div>${s.dosage||'<span style="color:var(--ink-muted);font-style:italic;font-size:12px">not set</span>'}</div><div style="font-size:11px;color:var(--ink-muted);margin-top:2px">Typical: ${recDosage}</div></td><td>${bottleInfo}</td><td>${purchaseInfo}</td><td>${chips}</td><td><span class="${r.cls}">${r.text}</span></td><td><button class="btn-del" onclick="removeSupplement(${s.id})">Remove</button></td></tr>
-    <tr id="bottle-form-${s.id}" style="display:none"><td colspan="8" style="background:var(--cream);padding:14px 16px"><div style="font-size:13px;font-weight:500;margin-bottom:10px">Add bottle details for <em>${s.name}</em></div><div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end"><div class="form-group"><label>Pills per bottle</label><input type="number" id="upd-bottle-${s.id}" placeholder="90" min="1"></div><div class="form-group"><label>Purchase date</label><input type="date" id="upd-date-${s.id}"></div><div style="display:flex;gap:8px"><button class="btn-add" style="margin-top:0;padding:9px 16px" onclick="saveBottleDetails(${s.id})">Save</button><button class="btn-sm" style="padding:9px 12px" onclick="document.getElementById('bottle-form-${s.id}').style.display='none'">Cancel</button></div></div></td></tr>`;
+    const r=calcReorder(s);
+    const chips=s.timings.map(t=>`<span class="timing-chip chip-${t}">${TIME_LABELS[t]}</span>`).join('');
+    const entry=lookupSupp(s.name);
+    const recDosage=entry?entry.typicalDosage:'—';
+    const bottleInfo=s.trackBottle&&s.bottlecount
+      ?`${s.pillsperdose}p/day<br><span style="font-size:11px;color:var(--ink-muted)">${s.bottlecount}/bottle</span>`
+      :`<span style="font-size:12px;color:var(--ink-muted);font-style:italic">Not set</span><br><button class="btn-sm" style="margin-top:4px;font-size:11px;color:var(--teal);border-color:var(--teal)" onclick="showBottleForm(${s.id})">+ Add details</button>`;
+    const purchaseInfo=s.purchasedate?new Date(s.purchasedate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'<span style="font-size:12px;color:var(--ink-muted)">—</span>';
+    html+=`<tr id="inv-row-${s.id}">
+      <td style="font-weight:500">${s.name}</td>
+      <td>${s.brand}</td>
+      <td><div>${s.dosage||'<span style="color:var(--ink-muted);font-style:italic;font-size:12px">not set</span>'}</div><div style="font-size:11px;color:var(--ink-muted);margin-top:2px">Typical: ${recDosage}</div></td>
+      <td>${bottleInfo}</td><td>${purchaseInfo}</td><td>${chips}</td>
+      <td><span class="${r.cls}">${r.text}</span></td>
+      <td><button class="btn-del" onclick="removeSupplement(${s.id})">Remove</button></td>
+    </tr>
+    <tr id="bottle-form-${s.id}" style="display:none">
+      <td colspan="8" style="background:var(--cream);padding:14px 16px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px">Add bottle details for <em>${s.name}</em></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end">
+          <div class="form-group"><label>Pills per bottle</label><input type="number" id="upd-bottle-${s.id}" placeholder="90" min="1"></div>
+          <div class="form-group"><label>Purchase date</label><input type="date" id="upd-date-${s.id}"></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-add" style="margin-top:0;padding:9px 16px" onclick="saveBottleDetails(${s.id})">Save</button>
+            <button class="btn-sm" style="padding:9px 12px" onclick="document.getElementById('bottle-form-${s.id}').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </td>
+    </tr>`;
   }
-  html += '</tbody></table></div>';
-  el.innerHTML = html;
+  html+='</tbody></table></div>';
+  el.innerHTML=html;
 }
 
 function showBottleForm(id) {
-  document.querySelectorAll('[id^="bottle-form-"]').forEach(r => r.style.display='none');
-  const row = document.getElementById('bottle-form-'+id);
-  if (row) { row.style.display=''; const d = document.getElementById('upd-date-'+id); if(d&&!d.value) d.valueAsDate=new Date(); }
+  document.querySelectorAll('[id^="bottle-form-"]').forEach(r=>r.style.display='none');
+  const row=document.getElementById('bottle-form-'+id);
+  if(row){row.style.display='';const d=document.getElementById('upd-date-'+id);if(d&&!d.value)d.valueAsDate=new Date();}
 }
 
 async function saveBottleDetails(id) {
-  const s = supplements.find(x=>x.id===id); if(!s) return;
-  const bottlecount = parseInt(document.getElementById('upd-bottle-'+id).value)||0;
-  const purchasedate = document.getElementById('upd-date-'+id).value;
-  if (!bottlecount||!purchasedate) { alert('Please enter bottle count and purchase date.'); return; }
-  const totalDaily = s.dosesMap ? Object.values(s.dosesMap).reduce((a,b)=>a+b,0) : (s.pillsperdose||1);
-  s.bottlecount=bottlecount; s.purchasedate=purchasedate; s.pillsperdose=totalDaily; s.dosesperday=1; s.trackBottle=true;
+  const s=supplements.find(x=>x.id===id); if(!s) return;
+  const bottlecount=parseInt(document.getElementById('upd-bottle-'+id).value)||0;
+  const purchasedate=document.getElementById('upd-date-'+id).value;
+  if(!bottlecount||!purchasedate){alert('Please enter bottle count and purchase date.');return;}
+  const totalDaily=s.dosesMap?Object.values(s.dosesMap).reduce((a,b)=>a+b,0):(s.pillsperdose||1);
+  s.bottlecount=bottlecount;s.purchasedate=purchasedate;s.pillsperdose=totalDaily;s.dosesperday=1;s.trackBottle=true;
   await save(); renderInventory();
 }
 
 async function removeSupplement(id) {
-  if (!confirm('Remove this supplement?')) return;
-  supplements = supplements.filter(s=>s.id!==id);
+  if(!confirm('Remove this supplement?')) return;
+  supplements=supplements.filter(s=>s.id!==id);
   await save(); renderInventory();
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
 (function init() {
   document.getElementById('purchasedate').valueAsDate = new Date();
-  if (cfg.sheetId && cfg.apiKey) {
+  if (cfg.scriptUrl && cfg.secret) {
     launchApp();
-    // Auto-sync on load
-    syncWithSheet().catch(e => { setStatus('red', 'Sync error'); });
+    pullAndRender();
     // Auto-sync every 5 minutes
-    setInterval(() => syncWithSheet().catch(()=>{}), 5 * 60 * 1000);
+    setInterval(() => pullAndRender(), 5 * 60 * 1000);
   } else {
     document.getElementById('setup-wizard').style.display = '';
     setStatus('red', 'Not connected');
