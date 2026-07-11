@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supplement Scheduler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F7F4EF;--paper:#FFFDF9;--ink:#1A1714;--ink-soft:#4A4540;--ink-muted:#9A948E;--teal:#1D6B5A;--teal-light:#E0F0EC;--amber:#B85C00;--amber-light:#FFF0E0;--rose:#8B2035;--rose-light:#FCEDEF;--slate:#2C4A6E;--slate-light:#E8EEF5;--violet:#4A3080;--violet-light:#EEE8F8;--border:#DDD9D2;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px}
+header{background:var(--ink);color:var(--paper);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;letter-spacing:-0.3px}
+header .subtitle{font-size:11px;opacity:0.5;font-weight:300;letter-spacing:0.5px;text-transform:uppercase}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#666;display:inline-block;margin-right:5px;vertical-align:middle;flex-shrink:0}
+.sync-dot.green{background:#4ade80}.sync-dot.amber{background:#fbbf24}.sync-dot.red{background:#f87171}
+nav{background:var(--paper);border-bottom:1px solid var(--border);display:flex;padding:0 20px;overflow-x:auto}
+nav button{background:none;border:none;padding:13px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--ink-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s}
+nav button.active{color:var(--ink);border-bottom-color:var(--ink)}
+nav button:hover:not(.active){color:var(--ink-soft)}
+main{max-width:980px;margin:0 auto;padding:24px 18px}
+.section{display:none}.section.active{display:block}
+
+/* SETUP WIZARD */
+.wizard{background:var(--paper);border:2px solid var(--slate);border-radius:var(--radius);padding:28px;max-width:560px;margin:40px auto}
+.wizard h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:8px}
+.wizard .sub{font-size:13px;color:var(--ink-muted);margin-bottom:24px;line-height:1.6}
+.step{display:flex;gap:14px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.step:last-of-type{border-bottom:none;margin-bottom:24px}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--slate);color:white;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-body{flex:1}
+.step-body strong{font-size:14px;font-weight:500;display:block;margin-bottom:4px}
+.step-body p{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:6px}
+.step-body code{background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:12px;font-family:monospace}
+.wizard-inputs{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.wizard-inputs input{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);width:100%}
+.wizard-inputs input:focus{outline:none;border-color:var(--slate);background:var(--paper)}
+.btn-wizard{background:var(--slate);color:white;border:none;border-radius:8px;padding:11px 28px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin-top:8px;width:100%;transition:opacity .15s}
+.btn-wizard:hover{opacity:.88}
+.wizard-err{font-size:12px;color:var(--rose);margin-top:8px;padding:8px 12px;background:var(--rose-light);border-radius:6px;display:none;line-height:1.5}
+.wizard-testing{font-size:12px;color:var(--slate);margin-top:8px;display:none}
+
+/* FORM */
+.form-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:18px}
+.form-card h2{font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;margin-bottom:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:11px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.6px}
+.form-group input,.form-group select{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);transition:border-color .15s;width:100%}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--teal);background:var(--paper)}
+.suggest-panel{background:var(--teal-light);border:1px solid #9fd4c4;border-radius:10px;padding:14px 16px;margin-top:14px}
+.suggest-title{font-size:12px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.suggest-row{display:flex;align-items:flex-start;gap:10px}
+.suggest-badge{background:var(--teal);color:white;font-size:11px;font-weight:500;padding:3px 10px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.suggest-text{font-size:12px;color:var(--teal);line-height:1.5}
+.suggest-reason{font-size:11px;color:#0F6E56;margin-top:4px;line-height:1.4;font-style:italic}
+.timing-row{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+.timing-opt{display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--cream);border:1px solid var(--border);border-radius:20px;font-size:13px;color:var(--ink-soft);cursor:pointer;transition:all .15s;user-select:none}
+.timing-opt input{display:none}
+.timing-opt.checked-fasted{background:var(--teal-light);border-color:var(--teal);color:var(--teal)}
+.timing-opt.checked-breakfast{background:var(--amber-light);border-color:var(--amber);color:var(--amber)}
+.timing-opt.checked-lunch{background:var(--slate-light);border-color:var(--slate);color:var(--slate)}
+.timing-opt.checked-dinner{background:var(--rose-light);border-color:var(--rose);color:var(--rose)}
+.timing-opt.checked-bed{background:var(--violet-light);border-color:var(--violet);color:var(--violet)}
+.toggle-switch{position:relative;display:inline-flex;align-items:center;cursor:pointer}
+.toggle-switch input{display:none}
+.toggle-track{display:block;width:44px;height:24px;background:var(--border);border-radius:12px;transition:background .2s;position:relative}
+.toggle-switch input:checked+.toggle-track{background:var(--teal)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none}
+.toggle-switch input:checked+.toggle-track .toggle-thumb{transform:translateX(20px)}
+.btn-add{margin-top:20px;background:var(--ink);color:var(--paper);border:none;border-radius:8px;padding:11px 28px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:opacity .15s}
+.btn-add:hover{opacity:.85}
+.msg{margin-top:10px;font-size:13px}.msg.ok{color:var(--teal)}.msg.err{color:var(--rose)}
+
+/* SCHEDULE */
+.time-block{margin-bottom:28px}
+.time-block-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.time-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.icon-fasted{background:var(--teal-light)}.icon-breakfast{background:var(--amber-light)}.icon-lunch{background:var(--slate-light)}.icon-dinner{background:var(--rose-light)}.icon-bed{background:var(--violet-light)}
+.time-title{font-family:'DM Serif Display',serif;font-size:17px;font-weight:400}
+.time-count{font-size:11px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+.sched-table-wrap{overflow-x:auto}
+.sched-table{width:100%;min-width:640px;border-collapse:collapse;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;table-layout:fixed}
+.sched-table th{background:var(--cream);padding:9px 12px;text-align:left;font-size:11px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border)}
+.sched-table td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:13px;line-height:1.5}
+.sched-table tr:last-child td{border-bottom:none}
+.supp-name-cell{font-weight:500}.supp-brand-cell{font-size:11px;color:var(--ink-muted);margin-top:2px}
+.rec-cell{font-size:12px;line-height:1.5}.rec-pill-line{font-weight:500}.rec-reason{font-size:11px;color:var(--ink-muted);font-style:italic;margin-top:3px}
+.reorder-ok{color:var(--teal);font-size:12px;font-weight:500}.reorder-soon{color:var(--amber);font-size:12px;font-weight:500}.reorder-overdue{color:var(--rose);font-size:12px;font-weight:500}.reorder-pending{color:var(--ink-muted);font-size:12px;font-style:italic}
+.notice{background:var(--teal-light);border:1px solid #b0d8cf;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--teal);margin-bottom:20px;line-height:1.5}
+.empty{text-align:center;padding:48px 20px;color:var(--ink-muted);font-size:14px;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius)}
+.empty .icon{font-size:32px;margin-bottom:10px;display:block}
+
+/* INVENTORY */
+.inv-table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;table-layout:fixed}
+.inv-table th{background:var(--cream);padding:9px 14px;text-align:left;font-size:11px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border)}
+.inv-table td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:13px}
+.inv-table tr:last-child td{border-bottom:none}
+.btn-del{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--rose);cursor:pointer;transition:background .15s}
+.btn-del:hover{background:var(--rose-light)}
+.btn-sm{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--ink-soft);cursor:pointer}
+.btn-sm:hover{background:var(--cream)}
+.timing-chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500;margin:2px 2px 2px 0}
+.chip-fasted{background:var(--teal-light);color:var(--teal)}.chip-breakfast{background:var(--amber-light);color:var(--amber)}.chip-lunch{background:var(--slate-light);color:var(--slate)}.chip-dinner{background:var(--rose-light);color:var(--rose)}.chip-bed{background:var(--violet-light);color:var(--violet)}
+
+/* CUSTOM DB MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--paper);border-radius:var(--radius);padding:24px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.modal h3{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;margin-bottom:6px}
+.modal .modal-sub{font-size:13px;color:var(--ink-muted);margin-bottom:20px;line-height:1.5}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.modal textarea{width:100%;background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);resize:vertical;min-height:70px}
+.modal textarea:focus{outline:none;border-color:var(--teal);background:var(--paper)}
+.modal-timing{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px}
+.modal-timing label{display:flex;align-items:center;gap:5px;padding:5px 12px;background:var(--cream);border:1px solid var(--border);border-radius:16px;font-size:12px;cursor:pointer;user-select:none}
+.modal-timing label input{display:none}
+.modal-timing label.active-fasted{background:var(--teal-light);border-color:var(--teal);color:var(--teal)}
+.modal-timing label.active-breakfast{background:var(--amber-light);border-color:var(--amber);color:var(--amber)}
+.modal-timing label.active-lunch{background:var(--slate-light);border-color:var(--slate);color:var(--slate)}
+.modal-timing label.active-dinner{background:var(--rose-light);border-color:var(--rose);color:var(--rose)}
+.modal-timing label.active-bed{background:var(--violet-light);border-color:var(--violet);color:var(--violet)}
+.modal-pills-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.modal-pills-row .pp-item{display:flex;flex-direction:column;gap:4px}
+.modal-pills-row .pp-item label{font-size:10px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.5px}
+.modal-pills-row .pp-item input{width:100%;background:var(--cream);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-family:'DM Sans',sans-serif;font-size:13px;text-align:center}
+.modal-footer{display:flex;gap:10px;margin-top:16px}
+.btn-modal-save{background:var(--teal);color:white;border:none;border-radius:8px;padding:10px 24px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;flex:1}
+.btn-modal-cancel{background:none;border:1px solid var(--border);border-radius:8px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;color:var(--ink-soft)}
+.custom-db-banner{background:var(--amber-light);border:1px solid #e0c090;border-radius:8px;padding:10px 14px;margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.custom-db-banner span{font-size:13px;color:var(--amber)}
+.btn-add-to-db{background:var(--amber);color:white;border:none;border-radius:7px;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap}
+.db-tab-btn{background:none;border:1px solid var(--border);border-radius:7px;padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;color:var(--ink-soft);margin-left:8px}
+.db-tab-btn:hover{background:var(--cream)}
+.db-entry-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.db-entry-row:last-child{border-bottom:none}
+
+#app-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;z-index:9999;transition:opacity .3s;box-shadow:0 4px 20px rgba(0,0,0,.18);max-width:90vw;text-align:center;opacity:0;pointer-events:none}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media print{
+  header,nav,.btn-add,.btn-del,.btn-sm,#sec-add,#sec-inventory,.notice,.wizard,#setup-wizard{display:none!important}
+  #sec-schedule{display:block!important}
+  body{background:white;font-size:12px}
+  main{padding:0;max-width:100%}
+  .sched-table,.sched-table th,.sched-table td{border:.5px solid #ccc!important;font-size:11px}
+  .sched-table th{background:#f5f5f5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .time-block{page-break-inside:avoid;margin-bottom:16px}
+}
+@media(max-width:600px){
+  header{padding:14px 16px}header h1{font-size:18px}
+  main{padding:16px 12px}
+  .form-grid{grid-template-columns:1fr}.form-grid-3{grid-template-columns:1fr 1fr}
+  .sched-table{min-width:520px}
+  .wizard{margin:16px auto;padding:18px}
+}
+
+/* LOGIN SCREEN */
+#login-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--ink);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--paper);border-radius:var(--radius);padding:36px 32px;width:100%;max-width:380px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.login-card h1{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;margin-bottom:6px;color:var(--ink)}
+.login-card .tagline{font-size:13px;color:var(--ink-muted);margin-bottom:28px}
+.login-card .login-icon{font-size:40px;margin-bottom:16px;display:block}
+.login-input{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);margin-bottom:12px;transition:border-color .15s;text-align:left}
+.login-input:focus{outline:none;border-color:var(--slate);background:var(--paper)}
+.btn-login{width:100%;background:var(--ink);color:white;border:none;border-radius:8px;padding:13px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:opacity .15s;margin-top:4px}
+.btn-login:hover{opacity:.85}
+.login-err{font-size:13px;color:var(--rose);margin-top:10px;padding:8px 12px;background:var(--rose-light);border-radius:6px;display:none}
+.login-footer{font-size:11px;color:var(--ink-muted);margin-top:20px;line-height:1.6}
+.btn-logout{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap}
+.btn-logout:hover{background:rgba(255,255,255,0.25)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <span class="login-icon">💊</span>
+    <h1>Supplement Scheduler</h1>
+    <p class="tagline">Your personal daily wellness tracker</p>
+    <input type="password" class="login-input" id="login-password" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-login" onclick="doLogin()">Sign in</button>
+    <div class="login-err" id="login-err">Incorrect password. Please try again.</div>
+    <p class="login-footer">This app is password protected.<br>Contact the owner for access.</p>
+  </div>
+</div>
+
+
+<header>
+  <div>
+    <h1>Supplement Scheduler</h1>
+    <div class="subtitle">Daily wellness tracker</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <span style="font-size:12px;opacity:.85;display:flex;align-items:center;white-space:nowrap">
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="sync-label">Not connected</span>
+    </span>
+    <button id="sync-btn" onclick="manualSync()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">↻ Sync now</button>
+    <button onclick="openSettings()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">⚙ Settings</button>
+    <button onclick="window.print()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 14px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">🖨 Print</button>
+    <button class="btn-logout" onclick="doLogout()">Sign out</button>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('add',this)">+ Add supplement</button>
+  <button onclick="showTab('schedule',this)">Daily schedule</button>
+  <button onclick="showTab('inventory',this)">Inventory</button>
+  <button onclick="showTab('database',this)">My Database</button>
+</nav>
+
+<div id="app-toast"></div>
+
+<main>
+
+<!-- SETUP WIZARD -->
+<div id="setup-wizard" style="display:none">
+  <div class="wizard">
+    <h2>Connect Google Sheets sync</h2>
+    <p class="sub">Enter your Apps Script Web App URL and the secret you set in the script. Your data will sync automatically across all your devices.</p>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Your Apps Script Web App URL</strong>
+        <p>This is the URL you got after deploying — it starts with <code>https://script.google.com/macros/s/...</code></p>
+        <div class="wizard-inputs">
+          <input type="text" id="setup-url" placeholder="https://script.google.com/macros/s/...">
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Your secret phrase</strong>
+        <p>The secret you set on line 6 of the script — e.g. <code>supplementscheduler2026</code></p>
+        <div class="wizard-inputs">
+          <input type="text" id="setup-secret" placeholder="Your secret phrase">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-wizard" onclick="saveSettings()">Connect &amp; sync</button>
+    <div id="wizard-err" class="wizard-err"></div>
+    <div id="wizard-testing" class="wizard-testing">⏳ Testing connection…</div>
+    <p style="font-size:11px;color:var(--ink-muted);margin-top:14px;text-align:center;line-height:1.6">Your URL and secret are stored only in this browser's local storage.<br>They are never sent anywhere except directly to your own Google Script.</p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-content" style="display:none">
+
+<div id="sec-add" class="section active">
+  <div class="form-card">
+    <h2>Add a supplement</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Brand name</label>
+        <input type="text" id="brand" placeholder="e.g. Thorne, NOW Foods">
+      </div>
+      <div class="form-group">
+        <label>Supplement name</label>
+        <input type="text" id="suppname" placeholder="e.g. Magnesium Glycinate" oninput="onSuppNameInput()">
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:14px">
+      <label>Dosage per pill (your bottle)</label>
+      <input type="text" id="dosage" placeholder="Leave blank to use suggested">
+    </div>
+
+    <div id="suggest-panel" style="display:none" class="suggest-panel">
+      <div class="suggest-title">✦ Research-based recommendation — timing &amp; dosing auto-applied</div>
+      <div id="suggest-body"></div>
+      <div style="margin-top:8px;font-size:11px;color:#0F6E56;font-style:italic">Timing auto-selected below — adjust if needed.</div>
+    </div>
+
+    <div style="margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div>
+        <div style="font-size:13px;font-weight:500">Track bottle &amp; reorder date</div>
+        <div style="font-size:12px;color:var(--ink-muted);margin-top:2px">Turn off if finishing a partial bottle</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="bottle-toggle" checked onchange="toggleBottleFields()">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      </label>
+    </div>
+
+    <div id="bottle-fields">
+      <div class="form-grid-3" style="margin-top:14px">
+        <div class="form-group"><label>Pills per bottle</label><input type="number" id="bottlecount" placeholder="90" min="1"></div>
+        <div class="form-group"><label>Purchase date</label><input type="date" id="purchasedate"></div>
+        <div class="form-group"><label>Pills per dose</label><input type="number" id="pillsperdose" placeholder="1" min="1" value="1"></div>
+      </div>
+      <div class="form-grid" style="margin-top:14px">
+        <div class="form-group"><label>Doses per day</label><input type="number" id="dosesperday" placeholder="1" min="1" value="1"></div>
+      </div>
+    </div>
+    <div id="bottle-skipped" style="display:none;margin-top:12px;background:var(--amber-light);border:1px solid #e0c090;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--amber)">
+      Reorder tracking skipped — update from Inventory later.
+    </div>
+
+    <div style="margin-top:16px">
+      <div style="font-size:11px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">When to take <span style="font-size:10px;font-style:italic;text-transform:none;font-weight:400">(auto-filled — adjust if needed)</span></div>
+      <div class="timing-row">
+        <label class="timing-opt" id="lbl-fasted" onclick="toggleTiming(this,'fasted')"><input type="checkbox" value="fasted"> ☀️ Morning fasted</label>
+        <label class="timing-opt" id="lbl-breakfast" onclick="toggleTiming(this,'breakfast')"><input type="checkbox" value="breakfast"> 🍳 With breakfast</label>
+        <label class="timing-opt" id="lbl-lunch" onclick="toggleTiming(this,'lunch')"><input type="checkbox" value="lunch"> 🥗 With lunch</label>
+        <label class="timing-opt" id="lbl-dinner" onclick="toggleTiming(this,'dinner')"><input type="checkbox" value="dinner"> 🌙 With dinner</label>
+        <label class="timing-opt" id="lbl-bed" onclick="toggleTiming(this,'bed')"><input type="checkbox" value="bed"> 💤 Before bed</label>
+      </div>
+    </div>
+    <button class="btn-add" onclick="addSupplement()">Add to schedule</button>
+    <div id="add-msg" class="msg" style="display:none"></div>
+  </div>
+</div>
+
+<div id="sec-schedule" class="section">
+  <div class="notice">Benefits and dosing suggestions reflect published scientific research. Always consult your healthcare provider before starting or changing any supplement regimen.</div>
+  <div id="schedule-content"></div>
+</div>
+
+<div id="sec-inventory" class="section">
+  <div id="inventory-content"></div>
+</div>
+
+
+<div id="sec-database" class="section">
+  <div class="form-card">
+    <h2>My supplement database</h2>
+    <p style="font-size:13px;color:var(--ink-muted);margin-bottom:16px;line-height:1.5">Supplements you've added to your personal database. These auto-fill timing and dosing just like the built-in entries.</p>
+    <div id="custom-db-list"></div>
+  </div>
+</div>
+</div><!-- end app-content -->
+
+<!-- CUSTOM DATABASE MODAL -->
+<div id="custom-db-modal" style="display:none" class="modal-overlay" onclick="if(event.target===this)closeCustomDbModal()">
+  <div class="modal">
+    <h3>Add to supplement database</h3>
+    <p class="modal-sub">This supplement wasn't recognised. Fill in the research details below and it will be saved permanently to your personal database — auto-filling timing and dosing next time you use it.</p>
+
+    <div class="modal-grid">
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Supplement name (as you'll type it)</label>
+        <input type="text" id="cdb-name" placeholder="e.g. Tongkat Ali">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Typical dosage per pill</label>
+        <input type="text" id="cdb-dosage" placeholder="e.g. 200mg, 400mg extract">
+      </div>
+    </div>
+
+    <div style="font-size:11px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">When to take it</div>
+    <div class="modal-timing" id="cdb-timing">
+      <label id="cdbl-fasted" onclick="toggleCdbTiming(this,'fasted')"><input type="checkbox" value="fasted"> ☀️ Morning fasted</label>
+      <label id="cdbl-breakfast" onclick="toggleCdbTiming(this,'breakfast')"><input type="checkbox" value="breakfast"> 🍳 With breakfast</label>
+      <label id="cdbl-lunch" onclick="toggleCdbTiming(this,'lunch')"><input type="checkbox" value="lunch"> 🥗 With lunch</label>
+      <label id="cdbl-dinner" onclick="toggleCdbTiming(this,'dinner')"><input type="checkbox" value="dinner"> 🌙 With dinner</label>
+      <label id="cdbl-bed" onclick="toggleCdbTiming(this,'bed')"><input type="checkbox" value="bed"> 💤 Before bed</label>
+    </div>
+
+    <div style="font-size:11px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Pills per dose at each selected time</div>
+    <div class="modal-pills-row" id="cdb-pills-row">
+      <div class="pp-item" id="pp-fasted" style="display:none"><label>Fasted</label><input type="number" id="pp-val-fasted" value="1" min="1"></div>
+      <div class="pp-item" id="pp-breakfast" style="display:none"><label>Breakfast</label><input type="number" id="pp-val-breakfast" value="1" min="1"></div>
+      <div class="pp-item" id="pp-lunch" style="display:none"><label>Lunch</label><input type="number" id="pp-val-lunch" value="1" min="1"></div>
+      <div class="pp-item" id="pp-dinner" style="display:none"><label>Dinner</label><input type="number" id="pp-val-dinner" value="1" min="1"></div>
+      <div class="pp-item" id="pp-bed" style="display:none"><label>Bedtime</label><input type="number" id="pp-val-bed" value="1" min="1"></div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:12px">
+      <label>Key benefits (what the research says)</label>
+      <textarea id="cdb-benefits" placeholder="e.g. Supports testosterone, libido, and energy. Evidence for reducing cortisol and improving athletic performance."></textarea>
+    </div>
+
+    <div class="form-group" style="margin-bottom:12px">
+      <label>Why this timing?</label>
+      <textarea id="cdb-timing-reason" placeholder="e.g. Take with food in the morning to support daytime hormone levels. Avoid evening — may be stimulating."></textarea>
+    </div>
+
+    <div id="cdb-err" style="display:none;font-size:12px;color:var(--rose);padding:8px 12px;background:var(--rose-light);border-radius:6px;margin-bottom:10px"></div>
+
+    <div class="modal-footer">
+      <button class="btn-modal-save" onclick="saveCustomDbEntry()">Save to my database</button>
+      <button class="btn-modal-cancel" onclick="closeCustomDbModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+</main>
+
+<script>// VERSION: 2.0 - Login fixed
+
+// ═══════════════════════════════════════════════════════════════════
+
+// To change your password: replace the value of APP_PASSWORD below
+// then re-upload the file to GitHub
+const APP_PASSWORD = 'supplements2026';
+const SESSION_KEY = 'supp_session_v1';
+
+function doLogin() {
+  const pwd = document.getElementById('login-password').value;
+  const err = document.getElementById('login-err');
+  if (!pwd) {
+    err.style.display = 'block';
+    err.textContent = 'Please enter a password.';
+    return;
+  }
+  if (pwd === APP_PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, 'authenticated');
+    document.getElementById('login-screen').style.display = 'none';
+    err.style.display = 'none';
+    initApp();
+  } else {
+    err.textContent = 'Incorrect password. Please try again.';
+    err.style.display = 'block';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-password').focus();
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-password').value = '';
+  document.getElementById('app-content').style.display = 'none';
+  document.getElementById('setup-wizard').style.display = 'none';
+}
+
+function checkLogin() {
+  const authenticated = sessionStorage.getItem(SESSION_KEY) === 'authenticated';
+  if (authenticated) {
+    document.getElementById('login-screen').style.display = 'none';
+    return true;
+  }
+  document.getElementById('login-screen').style.display = 'flex';
+  setTimeout(function() {
+    var pwd = document.getElementById('login-password');
+    if (pwd) pwd.focus();
+  }, 100);
+  return false;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DATABASES
+// ═══════════════════════════════════════════════════════════════════
+// ─── SUPPLEMENT DATABASE ───────────────────────────────────────────────────────
+// Schema: timing[] lists each slot where this supplement is taken.
+// doses{} maps each slot to its pill count for that slot.
+// If dosesPerDay > 1, the supplement appears in multiple slots with per-slot pill counts.
+// totalDailyPills = sum of all doses{} values.
+const SUPP_DB = [
+  {
+    keys: ["magnesium glycinate","magnesium bisglycinate"],
+    timing: ["bed"],
+    doses: { bed: 2 },
+    typicalDosage: "200mg elemental per 2 capsules",
+    timingReason: "Best at bedtime: glycinate form promotes muscle relaxation and sleep onset. Evening dosing also avoids competition with calcium for absorption.",
+    benefits: "Highly bioavailable form. Supports deep sleep, reduces anxiety and muscle cramps, regulates blood sugar, and supports 300+ enzymatic reactions. Minimal GI side effects."
+  },
+  {
+    keys: ["magnesium malate"],
+    timing: ["breakfast"],
+    doses: { breakfast: 2 },
+    typicalDosage: "200mg elemental per 2 capsules",
+    timingReason: "Best at breakfast: malate form is energising due to malic acid's role in the Krebs cycle. Morning use avoids sleep disruption that evening dosing can cause.",
+    benefits: "Supports energy production, reduces fibromyalgia pain and muscle soreness. Good for those who find glycinate too sedating."
+  },
+  {
+    keys: ["magnesium threonate","magnesium l-threonate","magtein","mag threonate"],
+    timing: ["bed"],
+    doses: { bed: 3 },
+    typicalDosage: "667mg per capsule as Magtein® — 3 capsules = 2000mg total (144mg elemental Mg)",
+    timingReason: "Best at bedtime: only magnesium form shown to cross the blood-brain barrier. Evening dosing maximises cognitive restoration during sleep and promotes relaxation. MIT clinical trials used evening dosing.",
+    benefits: "Raises brain magnesium levels — unique among all magnesium forms. Evidence for memory, learning, cognitive aging, anxiety reduction, and sleep quality."
+  },
+  {
+    keys: ["magnesium oxide","magnesium"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "250–500mg",
+    timingReason: "Best at breakfast: food reduces GI discomfort common with oxide form. Morning dosing supports daytime enzymatic function without sedation.",
+    benefits: "Supports muscle and nerve function, bone density, blood sugar regulation, and 300+ enzymatic reactions. Deficiency affects 60%+ of adults."
+  },
+  {
+    keys: ["vitamin d3","vitamin d","cholecalciferol"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "2000–5000 IU",
+    timingReason: "Best at breakfast: fat-soluble — absorption is significantly higher with a fat-containing meal. Morning aligns with natural solar patterns and avoids potential melatonin interference at night.",
+    benefits: "Essential for calcium absorption, immune modulation, testosterone production, mood regulation, and bone health. Deficiency linked to depression, autoimmunity, and cardiovascular disease."
+  },
+  {
+    keys: ["vitamin k2","mk-7","menaquinone"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "100–200mcg MK-7",
+    timingReason: "Best at breakfast alongside D3: fat-soluble, requires dietary fat for absorption. MK-7 has a ~72h half-life so once-daily morning dosing is ideal. Take with D3 — they work synergistically.",
+    benefits: "Directs calcium into bones and away from arterial walls. Prevents vascular calcification. Works synergistically with D3 — essential if supplementing D3 long-term."
+  },
+  {
+    keys: ["vitamin c","ascorbic acid","ascorbate"],
+    timing: ["breakfast","lunch"],
+    doses: { breakfast: 1, lunch: 1 },
+    typicalDosage: "500–1000mg per capsule",
+    timingReason: "Split across breakfast and lunch: vitamin C has a short half-life (~2h) so split dosing maintains plasma levels throughout the day. 1 pill at breakfast, 1 at lunch. Avoid large doses before bed (mildly stimulating).",
+    benefits: "Potent antioxidant. Supports collagen synthesis, immune function, iron absorption, and wound healing. Evidence for reducing cold duration. Split dosing outperforms single large dose."
+  },
+  {
+    keys: ["omega-3","omega 3","fish oil","epa","dha","krill oil"],
+    timing: ["dinner"],
+    doses: { dinner: 2 },
+    typicalDosage: "1000mg fish oil per softgel (180mg EPA / 120mg DHA) — 2 softgels",
+    timingReason: "Best at dinner: fat-soluble — absorption is up to 50% higher with a fat-containing meal. Evening dosing is most consistent for most people and reduces fishy aftertaste.",
+    benefits: "EPA and DHA reduce triglycerides, lower systemic inflammation, support cardiovascular and brain health. Strong evidence for depression, ADHD, joint pain, and cognitive aging."
+  },
+  {
+    keys: ["zinc","zinc picolinate","zinc glycinate","zinc bisglycinate","zinc citrate"],
+    timing: ["fasted"],
+    doses: { fasted: 1 },
+    typicalDosage: "25–50mg elemental",
+    timingReason: "Best fasted: absorption is highest on an empty stomach 30–60 mins before a meal. High-phytate foods (grains, legumes) reduce zinc absorption by up to 40%. If GI upset occurs, take with a small protein snack instead.",
+    benefits: "Essential for immune function, wound healing, testosterone production, sperm quality, taste/smell, and 300+ enzymatic processes. Long-term use >40mg/day depletes copper — consider co-supplementing."
+  },
+  {
+    keys: ["vitamin b12","methylcobalamin","cyanocobalamin","adenosylcobalamin"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "500–1000mcg",
+    timingReason: "Best at breakfast: B12 is energising — morning prevents sleep disruption. Sublingual or high-dose oral forms bypass limited intrinsic-factor-dependent absorption. Food is not required but aids consistency.",
+    benefits: "Essential for nerve function, DNA synthesis, and red blood cell formation. Critical for vegans, vegetarians, and adults 50+. Deficiency causes irreversible neurological damage."
+  },
+  {
+    keys: ["b complex","vitamin b complex","b-complex","b vitamins"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "B-50 or B-100 complex, 1 capsule",
+    timingReason: "Best at breakfast: B vitamins are energising — morning prevents insomnia. Food reduces nausea from B3.",
+    benefits: "All 8 B vitamins support energy metabolism, neurotransmitter synthesis, red blood cell production, and methylation."
+  },
+  {
+    keys: ["iron","ferrous sulfate","ferrous bisglycinate","iron bisglycinate"],
+    timing: ["fasted"],
+    doses: { fasted: 1 },
+    typicalDosage: "18–65mg elemental",
+    timingReason: "Best fasted: iron absorption is highest on an empty stomach with vitamin C. Avoid with calcium, dairy, tea, coffee, or antacids which block absorption by up to 50%.",
+    benefits: "Required for oxygen transport and cellular energy. Corrects fatigue and cognitive impairment from deficiency. Do not supplement without confirmed deficiency."
+  },
+  {
+    keys: ["calcium","calcium citrate","calcium carbonate"],
+    timing: ["breakfast","dinner"],
+    doses: { breakfast: 2, dinner: 2 },
+    typicalDosage: "500mg elemental per 2-capsule dose",
+    timingReason: "Split across breakfast and dinner: absorption is limited to ~500mg per dose, making split dosing essential. 2 capsules at breakfast, 2 at dinner. Carbonate requires food; citrate can be taken without.",
+    benefits: "Essential for bone density, muscle contraction, nerve signaling, and cardiovascular function. Always pair with K2 to direct calcium to bones."
+  },
+  {
+    keys: ["coq10","coenzyme q10","ubiquinol","ubiquinone"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "100–200mg (ubiquinol preferred)",
+    timingReason: "Best at breakfast: fat-soluble — absorption 3x higher with a fat-containing meal. Morning dosing prevents the energising effect from disrupting sleep.",
+    benefits: "Fuels mitochondrial ATP production. Evidence for heart failure, statin myopathy, exercise performance, fertility, and cognitive aging. Levels decline after age 30."
+  },
+  {
+    keys: ["probiotics","probiotic","lactobacillus","bifidobacterium"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "10–50 billion CFU",
+    timingReason: "Best at breakfast: stomach acid is lowest during and just after eating, maximising probiotic survival. Consistency of timing matters more than the exact slot.",
+    benefits: "Supports gut microbiome diversity, digestion, and immune modulation. Evidence for IBS, antibiotic-associated diarrhea, eczema, and mood via gut-brain axis."
+  },
+  {
+    keys: ["ashwagandha","withania somnifera","ksm-66","sensoril"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "300–600mg extract (KSM-66 or Sensoril)",
+    timingReason: "Best at breakfast: morning dosing lowers cortisol throughout the day — the primary mechanism studied in RCTs. KSM-66 trials specifically used morning dosing. If sleep is the main goal, switch to bedtime.",
+    benefits: "Reduces cortisol 14–32% in clinical studies. Supports stress resilience, thyroid function, testosterone levels, and athletic endurance."
+  },
+  {
+    keys: ["melatonin"],
+    timing: ["bed"],
+    doses: { bed: 1 },
+    typicalDosage: "0.5–1mg (low dose — most US products are overdosed at 5–10mg)",
+    timingReason: "Take 30–60 minutes before your target sleep time. Low doses (0.3–1mg) are evidence-based; high doses may cause grogginess and blunt natural production over time.",
+    benefits: "Regulates circadian rhythm and sleep onset. Best evidence for jet lag, shift work, and delayed sleep phase disorder."
+  },
+  {
+    keys: ["alpha lipoic acid","ala","r-ala","r-alpha lipoic acid"],
+    timing: ["fasted"],
+    doses: { fasted: 1 },
+    typicalDosage: "300–600mg (R-ALA is the bioactive form)",
+    timingReason: "Best fasted: food reduces ALA absorption by up to 40%. Take 30–60 minutes before meals. R-ALA is 2x more potent than racemic.",
+    benefits: "Universal antioxidant active in both fat and water. Regenerates vitamins C and E. Strong evidence for diabetic neuropathy, blood sugar regulation, liver protection, and reducing inflammation."
+  },
+  {
+    keys: ["berberine","berberine hcl"],
+    timing: ["breakfast","lunch","dinner"],
+    doses: { breakfast: 1, lunch: 1, dinner: 1 },
+    typicalDosage: "500mg per capsule — 1 before breakfast, 1 before lunch, 1 before dinner = 1500mg/day",
+    timingReason: "Split across all 3 meals: short half-life (~4h) requires dosing before each meal for sustained blood glucose regulation. Take 20–30 mins before each meal. Do not take on empty stomach.",
+    benefits: "Activates AMPK (mimics exercise at cellular level). Evidence comparable to metformin for blood glucose control. Also reduces LDL, triglycerides, and improves gut microbiome. Take with medical supervision if diabetic."
+  },
+  {
+    keys: ["nac","n-acetyl cysteine","n acetyl cysteine"],
+    timing: ["fasted","dinner"],
+    doses: { fasted: 1, dinner: 1 },
+    typicalDosage: "600mg per capsule — 1 fasted (morning), 1 with dinner",
+    timingReason: "Split morning fasted and evening with dinner: split dosing maintains consistent glutathione precursor availability. Morning fasted maximises absorption; dinner dose supports overnight glutathione synthesis.",
+    benefits: "Precursor to glutathione (master antioxidant). Supports liver detoxification, respiratory health. Strong evidence for OCD, addiction recovery, PCOS, and acetaminophen overdose treatment."
+  },
+  {
+    keys: ["creatine","creatine monohydrate"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "5g (5000mg) — powder far more practical; capsules ~750mg each (need 6–7 for a full dose)",
+    timingReason: "Best at breakfast: take with a carbohydrate and protein-containing meal to leverage insulin signalling for improved muscle uptake. Daily consistency matters more than exact timing.",
+    benefits: "Most evidence-backed ergogenic supplement. Increases intramuscular phosphocreatine for ATP regeneration. Gold-standard evidence for muscle strength and power. Emerging evidence for cognitive function in older adults."
+  },
+  {
+    keys: ["collagen","collagen peptides","marine collagen","hydrolyzed collagen"],
+    timing: ["fasted"],
+    doses: { fasted: 3 },
+    typicalDosage: "500–600mg per capsule — 3 capsules fasted (powder at 10–15g/day is far more practical)",
+    timingReason: "Best fasted: taken 30–45 mins before breakfast on an empty stomach alongside vitamin C. Fasted absorption avoids amino acid competition from dietary protein, maximising uptake into joints and skin.",
+    benefits: "Provides glycine, proline, and hydroxyproline for connective tissue. Evidence for reducing joint pain, improving skin elasticity, and supporting gut lining integrity."
+  },
+  {
+    keys: ["lion\'s mane","hericium erinaceus","lions mane"],
+    timing: ["breakfast"],
+    doses: { breakfast: 2 },
+    typicalDosage: "500mg per capsule — 2 capsules = 1000mg extract",
+    timingReason: "Best at breakfast: NGF synthesis from lion\'s mane benefits from morning dosing when cognitive demands are highest. May be mildly stimulating — avoid evening.",
+    benefits: "Promotes nerve growth factor (NGF) synthesis. Evidence for cognitive enhancement, focus, mild anxiety reduction, and neuroprotection."
+  },
+  {
+    keys: ["rhodiola","rhodiola rosea","rhodiola extract"],
+    timing: ["fasted"],
+    doses: { fasted: 1 },
+    typicalDosage: "200–400mg (standardised to 3% rosavins / 1% salidroside)",
+    timingReason: "Best fasted in the morning: adaptogenic and mildly stimulating — evening dosing causes insomnia. Take 30 mins before breakfast, ideally before a workout on training days.",
+    benefits: "Reduces cortisol and physical/mental fatigue. Evidence for athletic performance, stress resilience, and burnout. Mild antidepressant effects via monoamine regulation."
+  },
+  {
+    keys: ["ashwagandha","withania somnifera","ksm-66","sensoril"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "300–600mg extract (KSM-66 or Sensoril)",
+    timingReason: "Best at breakfast: morning dosing lowers cortisol throughout the day — the primary mechanism in RCTs. KSM-66 trials specifically used morning dosing.",
+    benefits: "Reduces cortisol 14–32% in clinical studies. Supports stress resilience, thyroid function, testosterone levels, and athletic endurance."
+  },
+  {
+    keys: ["vitamin e","tocopherol","mixed tocopherols"],
+    timing: ["dinner"],
+    doses: { dinner: 1 },
+    typicalDosage: "400 IU mixed tocopherols",
+    timingReason: "Best at dinner: fat-soluble — requires dietary fat for absorption. Dinner typically has the highest fat content. Mixed tocopherols preferred over isolated alpha-tocopherol.",
+    benefits: "Fat-soluble antioxidant protecting cell membranes. Supports immune function and skin health. Mixed tocopherols superior to synthetic dl-alpha form."
+  },
+  {
+    keys: ["selenium","selenium methionine","selenomethionine"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "100–200mcg (do not exceed 400mcg — narrow therapeutic window)",
+    timingReason: "Best at breakfast: food improves tolerance and absorption. Selenomethionine is most bioavailable. Narrow safe range — more is not better.",
+    benefits: "Essential for thyroid hormone conversion (T4→T3) and glutathione peroxidase antioxidant defense. Critical for thyroid health, immune function, and male fertility."
+  },
+  {
+    keys: ["curcumin","turmeric","curcuma longa"],
+    timing: ["breakfast","dinner"],
+    doses: { breakfast: 1, dinner: 1 },
+    typicalDosage: "500mg curcumin + piperine per capsule — 1 with breakfast, 1 with dinner",
+    timingReason: "Split across breakfast and dinner: curcumin has a short half-life (~6–8h), so twice-daily dosing maintains therapeutic plasma levels. Each dose requires a fat-containing meal and piperine for 20-fold absorption increase.",
+    benefits: "Curcumin inhibits NF-κB and COX-2 (master inflammation pathways). RCT evidence for joint pain comparable to NSAIDs, neuroprotection, cardiovascular protection, and antidepressant effects via BDNF upregulation."
+  },
+  {
+    keys: ["glutathione","liposomal glutathione","reduced glutathione"],
+    timing: ["fasted"],
+    doses: { fasted: 1 },
+    typicalDosage: "250–500mg (liposomal or sublingual for best absorption)",
+    timingReason: "Best fasted: take on empty stomach 30+ mins before food. Liposomal form significantly outperforms standard capsules for absorption.",
+    benefits: "Master intracellular antioxidant. Supports liver detoxification, immune function, and cellular protection."
+  },
+  {
+    keys: ["5-htp","5 htp","5-hydroxytryptophan"],
+    timing: ["bed"],
+    doses: { bed: 1 },
+    typicalDosage: "100–200mg",
+    timingReason: "Best at bedtime: converts to serotonin then melatonin — evening dosing is optimal for sleep. Morning use causes drowsiness. Do not combine with SSRIs without medical supervision.",
+    benefits: "Direct serotonin precursor. Evidence for mood, anxiety, appetite regulation, and sleep quality. Use cyclically (4–6 weeks on, 2 weeks off) to avoid tolerance."
+  },
+  {
+    keys: ["phosphatidylserine","ps","phosphatidyl serine"],
+    timing: ["breakfast"],
+    doses: { breakfast: 2 },
+    typicalDosage: "100mg per capsule — 2 capsules = 200mg",
+    timingReason: "Best at breakfast: supports cognitive performance during working hours. Reduces cortisol response to exercise when taken before workouts. Avoid evening — may be mildly stimulating.",
+    benefits: "Phospholipid critical for neuronal membrane integrity. Evidence for improving memory, attention, and cognitive decline with aging."
+  },
+  {
+    keys: ["green tea extract","egcg","epigallocatechin"],
+    timing: ["fasted"],
+    doses: { fasted: 1 },
+    typicalDosage: "400–500mg (standardised to 45–50% EGCG)",
+    timingReason: "Best fasted in the morning: highest absorption on empty stomach. Avoid with iron-rich meals as EGCG inhibits iron absorption. Morning leverages thermogenic effect.",
+    benefits: "EGCG activates AMPK and is a potent antioxidant. Evidence for cardiovascular protection, metabolic support, and cancer prevention pathways."
+  },
+  {
+    keys: ["resveratrol","trans-resveratrol"],
+    timing: ["dinner"],
+    doses: { dinner: 1 },
+    typicalDosage: "150–500mg trans-resveratrol",
+    timingReason: "Best at dinner: fat-soluble — absorption enhanced with fatty meals. Evening is typically the most fat-rich meal. Trans-resveratrol is the only bioactive form.",
+    benefits: "Activates sirtuins and AMPK. Evidence for cardiovascular protection, blood sugar regulation, and anti-aging pathways."
+  },
+  {
+    keys: ["quercetin","quercetin phytosome"],
+    timing: ["breakfast","dinner"],
+    doses: { breakfast: 1, dinner: 1 },
+    typicalDosage: "500mg per capsule — 1 with breakfast, 1 with dinner",
+    timingReason: "Split across breakfast and dinner: short half-life (~11h) benefits from split dosing. Phytosome form increases bioavailability 20x. Take with fat-containing meals.",
+    benefits: "Anti-inflammatory flavonoid. Evidence for allergy relief, immune support, exercise recovery, and cardiovascular health. Synergistic with vitamin C."
+  },
+  {
+    keys: ["saw palmetto"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "160–320mg liposterolic extract",
+    timingReason: "Best at breakfast: fat-soluble extract — absorption enhanced with fat-containing meal. Once-daily morning dosing is standard.",
+    benefits: "Evidence for reducing BPH symptoms and 5-alpha reductase inhibition. Supports prostate health."
+  },
+  {
+    keys: ["biotin","vitamin h","vitamin b7"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "5000–10000mcg (5–10mg)",
+    timingReason: "Best at breakfast: water-soluble — morning with food builds a consistent habit. High doses (>5mg) interfere with lab tests — inform your doctor.",
+    benefits: "Supports hair, nail, and skin health. Essential for fatty acid synthesis and carbohydrate metabolism."
+  },
+  {
+    keys: ["iodine","potassium iodide","lugol"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "150–500mcg",
+    timingReason: "Best at breakfast: take with food to reduce GI irritation. Separate from thyroid medications by several hours.",
+    benefits: "Essential for thyroid hormone synthesis. Deficiency causes hypothyroidism and cognitive impairment."
+  },
+  {
+    keys: ["vitamin a","retinol","beta carotene"],
+    timing: ["dinner"],
+    doses: { dinner: 1 },
+    typicalDosage: "5000–10000 IU retinol or 15–25mg beta-carotene",
+    timingReason: "Best at dinner: fat-soluble — requires dietary fat for absorption. Dinner is typically the most fat-rich meal. Beta-carotene is safer than preformed retinol.",
+    benefits: "Supports vision, immune function, skin cell turnover, and gene expression. Beta-carotene safer for long-term supplementation than preformed retinol."
+  },
+  {
+    keys: ["potassium","potassium citrate","potassium chloride"],
+    timing: ["breakfast","lunch","dinner"],
+    doses: { breakfast: 1, lunch: 1, dinner: 1 },
+    typicalDosage: "99mg per capsule (US regulatory limit) — 1 per meal x 3 meals = 297mg supplemental",
+    timingReason: "Split across all 3 meals: US supplement capsules are capped at 99mg. 1 capsule per meal distributes the dose and reduces GI upset. Dietary sources far exceed supplement amounts.",
+    benefits: "Regulates blood pressure, fluid balance, and cardiac rhythm. Evidence for reducing stroke risk and bone loss."
+  },
+  {
+    keys: ["acetyl l-carnitine","alcar","acetyl-l-carnitine"],
+    timing: ["fasted","lunch"],
+    doses: { fasted: 1, lunch: 1 },
+    typicalDosage: "500mg per capsule — 1 fasted (morning), 1 with lunch",
+    timingReason: "Split morning fasted and lunchtime: mildly energising — morning and midday dosing prevents sleep disruption. Fasted morning absorption may be slightly better for brain uptake.",
+    benefits: "Transports fatty acids into mitochondria. Evidence for cognitive decline, diabetic neuropathy, fatigue, and sperm motility."
+  },
+  {
+    keys: ["d-ribose","ribose"],
+    timing: ["breakfast","dinner"],
+    doses: { breakfast: 2, dinner: 2 },
+    typicalDosage: "750mg per capsule — 2 capsules with breakfast, 2 with dinner (powder at 5g/dose far more practical)",
+    timingReason: "Split across breakfast and dinner: split dosing replenishes ATP throughout the day. Best taken with meals to support energy around eating and activity windows.",
+    benefits: "Essential for ATP synthesis. Evidence for energy, exercise capacity, and recovery in heart failure, fibromyalgia, and chronic fatigue syndrome."
+  },
+  {
+    keys: ["gaba","gamma aminobutyric acid"],
+    timing: ["bed"],
+    doses: { bed: 1 },
+    typicalDosage: "500–750mg (PharmaGABA form preferred)",
+    timingReason: "Best at bedtime: inhibitory neurotransmitter — take 30–60 minutes before bed. PharmaGABA (naturally fermented) has better evidence for brain effects than synthetic GABA.",
+    benefits: "Promotes relaxation, reduces anxiety, and supports sleep quality. PharmaGABA shown to increase alpha brain waves and decrease cortisol."
+  },
+  {
+    keys: ["elderberry","sambucus","elderberry extract"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "500–1000mg extract",
+    timingReason: "Best at breakfast: morning dosing supports immune function throughout peak exposure hours. Best used short-term at illness onset.",
+    benefits: "Rich in anthocyanins. Evidence for reducing cold/flu duration and severity. Best evidence at illness onset rather than prevention."
+  },
+  {
+    keys: ["echinacea","echinacea purpurea","echinacea angustifolia"],
+    timing: ["breakfast","lunch","dinner"],
+    doses: { breakfast: 1, lunch: 1, dinner: 1 },
+    typicalDosage: "300–500mg per capsule — 1 x 3 times daily at illness onset",
+    timingReason: "Split across all 3 meals during acute illness only: 3x daily is the evidence-based dose for 7–10 days at illness onset. Not for long-term daily prevention.",
+    benefits: "Reduces cold incidence and duration when taken at illness onset. Purpurea root extract has strongest evidence. Use cyclically."
+  },
+  {
+    keys: ["spirulina","blue green algae"],
+    timing: ["fasted"],
+    doses: { fasted: 3 },
+    typicalDosage: "500mg per tablet — 3 tablets = 1.5g (target 3–6g/day; powder more practical for higher doses)",
+    timingReason: "Best fasted in the morning: chelating properties maximised on empty stomach. High protein content integrates well into morning nutrition. Mildly stimulating — avoid evening.",
+    benefits: "60–70% protein by weight. Evidence for blood sugar regulation, lipid reduction, and anti-inflammatory effects. Rich in iron, antioxidants, and phycocyanin."
+  },
+  {
+    keys: ["chromium","chromium picolinate","chromium polynicotinate"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "200–400mcg",
+    timingReason: "Best at breakfast with carbohydrates: chromium enhances insulin receptor signalling most effectively with a carbohydrate-containing meal.",
+    benefits: "Enhances insulin sensitivity. Evidence for improving blood sugar regulation and reducing carbohydrate cravings in prediabetes and type 2 diabetes."
+  },
+  {
+    keys: ["niacin","vitamin b3","nicotinic acid","nicotinamide","niacinamide"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "500mg (immediate release) or 500–1000mg (extended release)",
+    timingReason: "Best at breakfast: flushing form — take with food and aspirin 30 mins prior to reduce flush. Niacinamide (no-flush) can be taken at any meal.",
+    benefits: "Strong evidence for raising HDL cholesterol. Supports DNA repair via NAD+ synthesis. Niacinamide form supports skin aging reversal."
+  },
+  {
+    keys: ["nad","nad+","nmn","nicotinamide mononucleotide","nr","nicotinamide riboside"],
+    timing: ["fasted"],
+    doses: { fasted: 1 },
+    typicalDosage: "250–500mg NMN or 250–300mg NR",
+    timingReason: "Best fasted in the morning: maximises absorption and aligns with natural NAD+ circadian peak. Mildly energising — avoid evening dosing.",
+    benefits: "Raises cellular NAD+ levels which decline with age. Supports mitochondrial function, DNA repair, and sirtuin activation."
+  },
+  {
+    keys: ["folate","folic acid","methylfolate","5-mthf","l-methylfolate"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "400–800mcg (methylfolate preferred over folic acid for MTHFR variants)",
+    timingReason: "Best at breakfast: water-soluble — take with food. Morning dosing supports DNA synthesis and methylation throughout the day.",
+    benefits: "Critical for DNA synthesis, cell division, and methylation. Essential during pregnancy. L-methylfolate is the active bioavailable form."
+  },
+
+  // YOUR SPECIFIC SUPPLEMENTS
+  {
+    keys: ["magnesium threonate","magnesium l-threonate","magtein","mag threonate"],
+    timing: ["bed"],
+    doses: { bed: 3 },
+    typicalDosage: "667mg per capsule as Magtein® — 3 capsules = 2000mg total (144mg elemental Mg)",
+    timingReason: "Best at bedtime: only magnesium form shown to cross the blood-brain barrier. Evening dosing maximises cognitive restoration during sleep. MIT clinical trials used evening dosing.",
+    benefits: "Raises brain magnesium levels — unique among all magnesium forms. Evidence for memory, learning, cognitive aging, anxiety reduction, and sleep quality."
+  },
+  {
+    keys: ["vitamin d3 k2","d3 k2","d3+k2","vitamin d3 and k2","d3 with k2","vitamin d3 with k2","d3 k2 combo","vitamin d k2"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "5000 IU D3 + 100mcg K2 (MK-7) per softgel",
+    timingReason: "Best at breakfast: both fat-soluble — take with your largest fat-containing morning meal. D3 increases calcium absorption; K2 directs that calcium to bones rather than arteries.",
+    benefits: "D3 essential for calcium absorption, immune modulation, mood, testosterone, and bone density. K2 (MK-7) directs calcium to bones and away from arteries. Combined use is best practice — D3 alone may increase arterial calcification risk."
+  },
+  {
+    keys: ["magnesium citrate"],
+    timing: ["dinner"],
+    doses: { dinner: 2 },
+    typicalDosage: "100mg elemental per capsule — 2 capsules = 200mg elemental with dinner",
+    timingReason: "Best at dinner: mild laxative effect — evening keeps this overnight when least disruptive. Taking with food reduces GI irritation. Evening timing also supports muscle relaxation and sleep.",
+    benefits: "Well-absorbed form. Supports muscle function, nerve conduction, bowel regularity, bone density, and sleep. Mild laxative at higher doses — useful for constipation."
+  },
+  {
+    keys: ["collagen peptides","bovine collagen","marine collagen","hydrolyzed collagen","collagen type 1","collagen type 2","collagen type i","collagen type ii"],
+    timing: ["fasted"],
+    doses: { fasted: 3 },
+    typicalDosage: "500–600mg per capsule — 3 capsules fasted (powder at 10–15g is far more practical)",
+    timingReason: "Best fasted: taken 30–45 mins before breakfast on an empty stomach alongside vitamin C. Fasted absorption avoids amino acid competition, maximising uptake into joints and skin.",
+    benefits: "Evidence for reducing joint pain, improving skin elasticity, and supporting gut lining integrity. Vitamin C is a required cofactor for collagen synthesis."
+  },
+  {
+    keys: ["garlic","garlic extract","aged garlic","garlic pills","allicin","kyolic"],
+    timing: ["breakfast","dinner"],
+    doses: { breakfast: 1, dinner: 1 },
+    typicalDosage: "600mg aged garlic extract (AGE) per capsule — 1 with breakfast, 1 with dinner",
+    timingReason: "Split across breakfast and dinner: twice-daily dosing maintains consistent allicin metabolite plasma levels. Always take with food to eliminate GI upset and odour. Aged Garlic Extract (Kyolic) is the most studied odour-free form.",
+    benefits: "Reduces systolic BP 5–10 mmHg, LDL, and platelet aggregation. Antimicrobial, antifungal, immune-supporting via allicin. Evidence for reducing cold frequency and duration."
+  },
+  {
+    keys: ["dhea","dehydroepiandrosterone","7-keto dhea","7 keto dhea"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "25–50mg standard; women 10–25mg; 7-Keto DHEA 100–200mg",
+    timingReason: "Best at breakfast: DHEA peaks in early morning — morning dosing mimics the natural circadian pattern. Avoid evening: stimulating and disrupts sleep. Always test DHEA-S blood levels with a physician.",
+    benefits: "Precursor to testosterone and oestrogen. Evidence for energy, mood, libido, bone density in adults 40+ with confirmed low DHEA-S. 7-Keto DHEA does not convert to sex hormones. Requires medical supervision."
+  },
+  {
+    keys: ["zinc picolinate","zinc glycinate","zinc bisglycinate","zinc citrate","zinc sulfate","zinc acetate","zinc monomethionine","zinc orotate"],
+    timing: ["fasted"],
+    doses: { fasted: 1 },
+    typicalDosage: "25–50mg elemental (picolinate and bisglycinate most bioavailable; do not exceed 40mg/day long-term)",
+    timingReason: "Best fasted: highest absorption on empty stomach 30–60 mins before a meal. Zinc competes with copper and iron — avoid co-administering.",
+    benefits: "Essential for immune function, wound healing, testosterone, sperm quality, and 300+ enzymatic reactions. Long-term use >40mg/day depletes copper."
+  },
+  {
+    keys: ["liposomal vitamin c","liposomal c","vitamin c liposomal","liposomal ascorbic acid"],
+    timing: ["fasted","dinner"],
+    doses: { fasted: 1, dinner: 1 },
+    typicalDosage: "500–1000mg liposomal per capsule — 1 fasted (morning), 1 with dinner",
+    timingReason: "Split morning fasted and evening with dinner: twice-daily dosing maintains high plasma levels. Morning fasted maximises liposomal absorption. Evening dose supports overnight immune and tissue repair. Avoid hot liquids — heat degrades liposomes.",
+    benefits: "6–10x more bioavailable than standard vitamin C. Achieves therapeutic intracellular levels. Evidence for immune potentiation, collagen synthesis, antioxidant recycling, and anti-viral properties."
+  },
+  {
+    keys: ["colostrum","bovine colostrum","colostrum powder","first milk"],
+    timing: ["fasted","bed"],
+    doses: { fasted: 2, bed: 2 },
+    typicalDosage: "500mg per capsule — 2 fasted (morning), 2 before bed",
+    timingReason: "Split morning fasted and before bed (both on empty stomach): food competes with immunoglobulin and growth factor absorption. Morning: 30–45 mins before breakfast. Bed: 2+ hours after last meal. Overnight fasted window maximises growth factor activity during sleep.",
+    benefits: "Rich in IgG (20–25%), lactoferrin, IGF-1, and growth factors. Evidence for gut permeability repair, immune enhancement, and athletic performance and recovery."
+  },
+  {
+    keys: ["boron","boron glycinate","calcium fructoborate","boron citrate"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "3–6mg elemental boron — most capsules 3mg; do not exceed 20mg/day",
+    timingReason: "Best at breakfast: take with food to reduce GI irritation. Stack with D3, magnesium, and calcium — boron enhances all three. Long half-life means once-daily morning dosing is sufficient.",
+    benefits: "Increases free testosterone by reducing SHBG. Extends vitamin D half-life (+24% serum D3). Supports bone density, brain function, and anti-inflammatory pathways via NF-kB inhibition."
+  },
+  {
+    keys: ["b complex","vitamin b complex","b-complex","b vitamins","b50","b100","super b complex"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "B-50 or B-100 complex, 1 capsule — methylated forms preferred",
+    timingReason: "Best at breakfast: B vitamins are energising — morning prevents vivid dreams and insomnia from evening dosing. Food prevents niacin flush and riboflavin GI upset.",
+    benefits: "All 8 B vitamins for energy metabolism, neurotransmitter synthesis, DNA methylation, and nerve function. Essential for those on metformin, PPIs, oral contraceptives, or plant-based diets."
+  },
+  {
+    keys: ["theanine","l-theanine","l theanine","suntheanine"],
+    timing: ["breakfast"],
+    doses: { breakfast: 1 },
+    typicalDosage: "100–200mg (Suntheanine® is the most studied form)",
+    timingReason: "Best at breakfast alongside coffee: 2:1 theanine:caffeine ratio reduces jitteriness while improving sustained attention and focus. Non-sedating — can also be taken before bed at 200mg for sleep.",
+    benefits: "Increases alpha brain waves (relaxed-alert state). Reduces anxiety, synergistic with caffeine for focus, improves sleep quality. Non-sedating. Safe for daily long-term use."
+  },
+  {
+    keys: ["turmeric","curcumin","turmeric curcumin","turmeric extract","bcm-95","meriva","longvida","theracurmin"],
+    timing: ["breakfast","dinner"],
+    doses: { breakfast: 1, dinner: 1 },
+    typicalDosage: "500mg curcumin + piperine per capsule — 1 with breakfast, 1 with dinner",
+    timingReason: "Split across breakfast and dinner: short half-life (~6–8h) — twice-daily maintains therapeutic anti-inflammatory plasma levels. Each dose requires fat for absorption and piperine for 20-fold bioavailability increase.",
+    benefits: "Inhibits NF-κB and COX-2 (master inflammation pathways). RCT evidence for joint pain comparable to NSAIDs, neuroprotection, cardiovascular protection, and antidepressant effects via BDNF upregulation."
+  },
+  {
+    keys: ["catuaba","catuaba bark","catuaba extract","erythroxylum catuaba","trichilia catigua"],
+    timing: ["breakfast","lunch"],
+    doses: { breakfast: 1, lunch: 1 },
+    typicalDosage: "500–1000mg bark extract per capsule — 1 with breakfast, 1 with lunch",
+    timingReason: "Split across breakfast and lunch: mild stimulating and dopaminergic properties — all doses must be in the first half of the day to prevent sleep disruption. Always take with food. Avoid combining with MAOIs or antidepressants.",
+    benefits: "Brazilian adaptogen with dopaminergic activity. Supports mood, libido, and energy. Neuroprotective via cinchonain antioxidants. Anti-fatigue and adaptogenic. Most evidence preclinical."
+  }
+];
+
+// ─── BENEFITS DATABASE (for schedule display) ─────────────────────────────────
+const BENEFITS = {
+  default: "Supports general health and wellbeing. Consult the research specific to this supplement.",
+  "magnesium glycinate": "Highly bioavailable form. Supports deep sleep, reduces anxiety and muscle cramps, regulates blood sugar. Minimal GI side effects.",
+  "magnesium malate": "Supports energy production, reduces fibromyalgia pain and muscle soreness.",
+  "magnesium": "Supports muscle/nerve function, bone density, blood sugar, sleep. Deficiency affects 60%+ of adults.",
+  "vitamin d3": "Essential for calcium absorption, immune modulation, testosterone, mood, and bone health.",
+  "vitamin d": "Critical for bone health, immune function, hormone regulation, and mood.",
+  "vitamin k2": "Directs calcium into bones, away from arteries. Works synergistically with D3.",
+  "vitamin c": "Potent antioxidant. Collagen synthesis, immune function, iron absorption, wound healing.",
+  "omega-3": "EPA/DHA reduce triglycerides, lower inflammation, support heart and brain health.",
+  "omega 3": "EPA/DHA reduce triglycerides, lower inflammation, support heart and brain health.",
+  "fish oil": "EPA/DHA reduce inflammation, support cardiovascular and cognitive health.",
+  "zinc": "Immune function, wound healing, testosterone, sperm quality, 300+ enzymatic processes.",
+  "vitamin b12": "Nerve function, DNA synthesis, red blood cell formation. Critical for vegans and adults 50+.",
+  "b complex": "Energy metabolism, neurotransmitter synthesis, red blood cell production, methylation.",
+  "iron": "Oxygen transport, energy production. Corrects fatigue and cognitive impairment from deficiency.",
+  "calcium": "Bone density, muscle contraction, nerve signaling, cardiovascular function.",
+  "coq10": "Mitochondrial ATP production. Heart failure, statin myopathy, exercise performance, fertility.",
+  "probiotics": "Gut microbiome diversity, digestion, immune modulation. Evidence for IBS and mood.",
+  "ashwagandha": "Reduces cortisol 14–32%. Stress resilience, thyroid function, testosterone, endurance.",
+  "melatonin": "Regulates circadian rhythm and sleep onset. Best evidence for jet lag and insomnia.",
+  "alpha lipoic acid": "Universal antioxidant. Diabetic neuropathy, blood sugar regulation, liver protection.",
+  "berberine": "AMPK activator comparable to metformin. Blood glucose, lipids, gut microbiome.",
+  "nac": "Glutathione precursor. Liver detox, respiratory health, OCD, addiction recovery.",
+  "creatine": "ATP regeneration. Gold-standard for muscle strength, power. Emerging evidence for cognition.",
+  "collagen": "Joint pain reduction, skin elasticity, gut lining integrity.",
+  "lion's mane": "Promotes NGF synthesis. Cognitive enhancement, focus, neuroprotection.",
+  "rhodiola": "Reduces fatigue and cortisol. Athletic performance, stress resilience, burnout.",
+  "vitamin e": "Fat-soluble antioxidant protecting cell membranes. Immune function, skin health.",
+  "selenium": "Thyroid hormone conversion, glutathione peroxidase defense, male fertility.",
+  "curcumin": "NF-kB anti-inflammatory. Joint pain, cognitive protection, cardiovascular health.",
+  "turmeric": "Contains curcumin. Anti-inflammatory and antioxidant (requires piperine for absorption).",
+  "glutathione": "Master antioxidant. Liver detoxification, immune function, cellular protection.",
+  "5-htp": "Serotonin precursor. Mood, anxiety, appetite, sleep quality.",
+  "l-theanine": "Calm alertness, alpha brain waves. Synergistic with caffeine for focus.",
+  "phosphatidylserine": "Neuronal membrane integrity. Memory, attention, cognitive aging.",
+  "green tea extract": "EGCG antioxidant. Cardiovascular protection, metabolic support.",
+  "resveratrol": "Sirtuin activator. Cardiovascular protection, anti-aging, blood sugar.",
+  "quercetin": "Anti-inflammatory, antihistamine. Allergy relief, immune support, cardiovascular.",
+  "saw palmetto": "BPH symptom reduction, 5-alpha reductase inhibition, prostate health.",
+  "biotin": "Hair, nail, skin health. Fatty acid synthesis, carbohydrate metabolism.",
+  "iodine": "Thyroid hormone synthesis. Prevents hypothyroidism and cognitive impairment.",
+  "vitamin a": "Vision, immune function, skin cell turnover, gene expression.",
+  "potassium": "Blood pressure regulation, cardiac rhythm, stroke prevention, bone health.",
+  "acetyl l-carnitine": "Mitochondrial fatty acid transport. Cognitive decline, neuropathy, fatigue, fertility.",
+  "d-ribose": "ATP synthesis. Energy, exercise capacity, fibromyalgia, chronic fatigue syndrome.",
+  "gaba": "Relaxation, anxiety reduction, sleep quality (PharmaGABA form preferred).",
+  "elderberry": "Reduces cold/flu duration and severity. Immune cytokine modulation.",
+  "echinacea": "Reduces cold incidence and duration when taken at illness onset.",
+  "spirulina": "High protein, antioxidants. Blood sugar regulation, lipid reduction, anti-inflammatory.",
+  "chromium": "Insulin sensitivity, blood sugar regulation, carbohydrate craving reduction.",
+  "niacin": "Raises HDL cholesterol, DNA repair, NAD+ synthesis.",
+  "nad": "Raises cellular NAD+. Mitochondrial function, DNA repair, sirtuin activation.",
+  "nmn": "NAD+ precursor. Mitochondrial health, DNA repair, anti-aging pathways.",
+  "folate": "DNA synthesis, methylation, cell division. Essential during pregnancy.",
+  "magnesium threonate": "Crosses blood-brain barrier — raises brain magnesium. Evidence for memory, learning, cognitive aging, and sleep quality. Most studied form for neurological benefits.",
+  "magnesium l-threonate": "Crosses blood-brain barrier — raises brain magnesium. Evidence for memory, learning, cognitive aging, and sleep quality.",
+  "vitamin d3 k2": "D3 supports calcium absorption, immune function, mood, and testosterone. K2 (MK-7) directs calcium into bones and away from arteries. Combined use is considered best practice — D3 without K2 may increase arterial calcification risk.",
+  "d3 k2": "D3 supports calcium absorption, immune function, mood, and testosterone. K2 (MK-7) directs calcium into bones and away from arteries. Best taken together.",
+  "d3+k2": "D3 supports calcium absorption, immune function, mood, and testosterone. K2 (MK-7) directs calcium into bones and away from arteries. Synergistic pair — best taken together.",
+  "magnesium citrate": "Well-absorbed form. Supports muscle function, nerve conduction, bowel regularity, bone density, and sleep. Mild laxative at higher doses — useful for constipation.",
+  "collagen": "Evidence for reducing joint pain, improving skin elasticity and hydration, and supporting gut lining integrity. Requires vitamin C for synthesis. Hydrolysed peptides are most bioavailable.",
+  "collagen peptides": "Evidence for reducing joint pain, improving skin elasticity and hydration, and supporting gut lining integrity. Take with vitamin C for optimal synthesis.",
+  "marine collagen": "Type I collagen from fish. Evidence for skin elasticity, joint support, and gut integrity. Highly bioavailable hydrolysed form.",
+  "bovine collagen": "Types I and III collagen. Evidence for skin, joint, and gut health. Hydrolysed peptides are most bioavailable form.",
+  "garlic": "Reduces systolic BP 5–10 mmHg, LDL cholesterol, and platelet aggregation. Anti-microbial, anti-fungal, immune-supporting via allicin and organosulfur compounds. AGE form is odour-free with strongest long-term evidence.",
+  "garlic extract": "Reduces systolic BP, LDL, and platelet aggregation. Aged Garlic Extract (AGE/Kyolic) is odour-free and most clinically validated.",
+  "garlic pills": "Reduces systolic BP, LDL, and platelet aggregation. Aged Garlic Extract (Kyolic) is the most clinically validated and odour-free form.",
+  "aged garlic": "Aged 20 months — eliminates harsh compounds while concentrating S-allylcysteine. Reduces blood pressure, LDL, platelet aggregation, and cardiovascular risk. Most studied long-term garlic product.",
+  "dhea": "Precursor to testosterone and oestrogen. Evidence for energy, mood, libido, bone density, and immune function in confirmed DHEA-deficient adults (40+). Use under medical supervision with DHEA-S blood testing.",
+  "dehydroepiandrosterone": "Adrenal hormone precursor. Evidence for improving energy, mood, libido, and bone density in age-related decline. Requires medical supervision and baseline blood testing.",
+  "7-keto dhea": "DHEA metabolite that does not convert to sex hormones. Evidence for metabolic rate support, thermogenesis, and immune function. Safer than DHEA for those avoiding hormone effects.",
+  "zinc": "Immune function, wound healing, testosterone, sperm quality, 300+ enzymatic processes. Long-term use >40mg/day depletes copper — supplement copper alongside.",
+  "zinc picolinate": "Most bioavailable zinc form. Immune function, testosterone, wound healing, sperm quality. Do not exceed 40mg/day long-term without copper co-supplementation.",
+  "liposomal vitamin c": "6–10x more bioavailable than standard vitamin C. Achieves therapeutic intracellular levels. Evidence for immune potentiation, collagen synthesis, antioxidant recycling, and anti-viral properties.",
+  "liposomal c": "Superior bioavailability form of vitamin C. Achieves intracellular levels not possible with standard oral supplementation. Immune, collagen, and antioxidant support.",
+  "vitamin c liposomal": "6–10x more bioavailable than standard ascorbic acid. Supports immune function, collagen synthesis, antioxidant defence, and iron absorption at therapeutic intracellular concentrations.",
+  "colostrum": "Rich in immunoglobulins (IgG 20–25%), lactoferrin, IGF-1, and growth factors. Evidence for gut permeability repair, immune enhancement, and athletic performance and recovery.",
+  "bovine colostrum": "First milk from cows. Rich in IgG, lactoferrin, and IGF-1. Evidence for improving leaky gut, reducing infections, and enhancing exercise recovery. Take on empty stomach.",
+  "boron": "Trace mineral that increases free testosterone by reducing SHBG, extends vitamin D half-life (+24% serum D3), supports bone density, and has anti-inflammatory properties via NF-kB inhibition.",
+  "boron glycinate": "Highly bioavailable boron form. Raises free testosterone, extends vitamin D activity, supports bone density and brain function. 3–6mg/day is the evidence-based dose.",
+  "b complex": "All 8 B vitamins for energy metabolism, neurotransmitter synthesis, DNA methylation, and nerve function. Methylated forms (methylcobalamin, methylfolate, P5P) preferred for those with MTHFR variants.",
+  "vitamin b complex": "Comprehensive B vitamin support. Energy, mood, neurological function, and DNA repair. Methylated forms preferred. Take in the morning — energising.",
+  "super b complex": "High-potency B vitamin complex. Energy metabolism, neurotransmitter support, homocysteine regulation. Morning use only — avoid evening (stimulating).",
+  "theanine": "Alpha brain wave promoter. Calm focused alertness without sedation. Synergistic with caffeine for sustained focus. Evidence for sleep quality improvement at 200mg before bed.",
+  "l-theanine": "Increases alpha brain waves (relaxed-alert state). Reduces anxiety, improves focus with caffeine, improves sleep quality. Non-sedating. Suntheanine® is the most studied form.",
+  "turmeric": "Curcumin inhibits NF-κB and COX-2 (anti-inflammatory). Joint pain relief comparable to NSAIDs in osteoarthritis trials. Neuroprotective, cardiovascular, and antidepressant effects. Requires piperine or phospholipid complex for absorption.",
+  "curcumin": "Active compound in turmeric. Potent NF-κB and COX-2 inhibitor. RCT evidence for joint pain, neuroprotection, cardiovascular health, and mood via BDNF upregulation. Formulation critical for bioavailability.",
+  "turmeric curcumin": "Curcumin from turmeric inhibits master inflammation pathways. Joint pain, brain protection, cardiovascular and mood support. Must use enhanced bioavailability form (piperine, BCM-95, or Meriva).",
+  "catuaba": "Traditional Brazilian adaptogen. Mild dopaminergic and noradrenergic activity supporting mood and libido. Neuroprotective via cinchonain antioxidants. Anti-fatigue and anti-depressant properties in preclinical studies.",
+  "catuaba bark": "Brazilian bark with dopaminergic activity. Traditional use for sexual dysfunction, fatigue, and nervous system support. Cinchonain compounds show neuroprotective and antioxidant properties in research.",
+  "catuaba extract": "Standardised bark extract (Trichilia catigua). Supports libido, mood, energy, and neuroprotection. Most evidence is preclinical; used safely in Brazilian medicine for centuries."
+};
+
+function getBenefits(name) {
+  const n = name.toLowerCase().trim();
+  if (BENEFITS[n]) return BENEFITS[n];
+  for (const key of Object.keys(BENEFITS)) {
+    if (key !== 'default' && n.includes(key)) return BENEFITS[key];
+  }
+  return BENEFITS.default;
+}
+
+function lookupSupp(name) {
+  const n = name.toLowerCase().trim();
+  for (const entry of SUPP_DB) {
+    if (entry.keys.some(k => n.includes(k) || k.includes(n))) return entry;
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CUSTOM SUPPLEMENT DATABASE
+// ═══════════════════════════════════════════════════════════════════
+let customDB = [];
+try { customDB = JSON.parse(localStorage.getItem('supp_custom_db') || '[]'); } catch(e) {}
+function saveCustomDB() { localStorage.setItem('supp_custom_db', JSON.stringify(customDB)); }
+
+function lookupSuppWithCustom(name) {
+  const n = name.toLowerCase().trim();
+  // Check custom DB first
+  for (const entry of customDB) {
+    if (entry.keys.some(k => n.includes(k) || k.includes(n))) return entry;
+  }
+  // Check built-in SUPP_DB
+  for (const entry of SUPP_DB) {
+    if (entry.keys.some(k => n.includes(k) || k.includes(n))) return entry;
+  }
+  return null;
+}
+
+function getBenefitsWithCustom(name) {
+  const n = name.toLowerCase().trim();
+  // Check custom DB first
+  for (const entry of customDB) {
+    if (entry.keys.some(k => n.includes(k) || k.includes(n))) return entry.benefits;
+  }
+  // Check built-in BENEFITS
+  if (BENEFITS[n]) return BENEFITS[n];
+  for (const key of Object.keys(BENEFITS)) {
+    if (key !== 'default' && n.includes(key)) return BENEFITS[key];
+  }
+  return BENEFITS.default;
+}
+
+// ── MODAL ──────────────────────────────────────────────────────────
+let cdbPendingName = '';
+
+function openCustomDbModal(prefillName) {
+  cdbPendingName = prefillName || '';
+  document.getElementById('cdb-name').value = prefillName || '';
+  document.getElementById('cdb-dosage').value = '';
+  document.getElementById('cdb-benefits').value = '';
+  document.getElementById('cdb-timing-reason').value = '';
+  document.getElementById('cdb-err').style.display = 'none';
+  ['fasted','breakfast','lunch','dinner','bed'].forEach(t => {
+    const lbl = document.getElementById('cdbl-' + t);
+    lbl.querySelector('input').checked = false;
+    lbl.className = '';
+    document.getElementById('pp-' + t).style.display = 'none';
+    document.getElementById('pp-val-' + t).value = '1';
+  });
+  document.getElementById('custom-db-modal').style.display = 'flex';
+}
+
+function closeCustomDbModal() {
+  document.getElementById('custom-db-modal').style.display = 'none';
+}
+
+function toggleCdbTiming(lbl, val) {
+  const cb = lbl.querySelector('input');
+  cb.checked = !cb.checked;
+  const ppItem = document.getElementById('pp-' + val);
+  if (cb.checked) { lbl.className = 'active-' + val; ppItem.style.display = ''; }
+  else { lbl.className = ''; ppItem.style.display = 'none'; }
+}
+
+function saveCustomDbEntry() {
+  const name = document.getElementById('cdb-name').value.trim();
+  const dosage = document.getElementById('cdb-dosage').value.trim();
+  const benefits = document.getElementById('cdb-benefits').value.trim();
+  const timingReason = document.getElementById('cdb-timing-reason').value.trim();
+  const err = document.getElementById('cdb-err');
+  const timing = Array.from(document.querySelectorAll('#cdb-timing input:checked')).map(c => c.value);
+  const doses = {};
+  timing.forEach(t => { doses[t] = parseInt(document.getElementById('pp-val-' + t).value) || 1; });
+
+  if (!name || !dosage || !timing.length || !benefits) {
+    err.textContent = 'Please fill in name, dosage, at least one timing, and benefits.';
+    err.style.display = 'block'; return;
+  }
+
+  const existingIdx = customDB.findIndex(e => e.keys.includes(name.toLowerCase()));
+  const entry = {
+    keys: [name.toLowerCase()],
+    timing, doses,
+    typicalDosage: dosage,
+    timingReason: timingReason || 'Based on your personal research.',
+    benefits, custom: true,
+    addedAt: new Date().toISOString()
+  };
+
+  if (existingIdx >= 0) { customDB[existingIdx] = entry; showToast('Updated "' + name + '" in your database', 'ok'); }
+  else { customDB.push(entry); showToast('Added "' + name + '" to your database', 'ok'); }
+
+  saveCustomDB();
+  closeCustomDbModal();
+  renderCustomDbList();
+
+  const suppNameField = document.getElementById('suppname');
+  if (suppNameField && suppNameField.value.trim().toLowerCase() === name.toLowerCase()) {
+    setTimeout(() => onSuppNameInput(), 100);
+  }
+}
+
+function deleteCustomDbEntry(idx) {
+  if (!confirm('Remove "' + customDB[idx].keys[0] + '" from your database?')) return;
+  customDB.splice(idx, 1);
+  saveCustomDB();
+  renderCustomDbList();
+  showToast('Removed from database', 'ok');
+}
+
+function renderCustomDbList() {
+  var el = document.getElementById('custom-db-list');
+  if (!el) return;
+  if (!customDB.length) {
+    el.innerHTML = '<div class="empty" style="padding:24px;border:none"><span class="icon" style="font-size:24px">🧪</span>No custom supplements yet. When you type an unrecognised supplement name in the Add tab, you will see an option to add it here.</div>';
+    return;
+  }
+  var html = '';
+  customDB.forEach(function(entry, idx) {
+    var dosesStr = entry.timing.map(function(t) {
+      var p = entry.doses[t] || 1;
+      return p + ' pill' + (p > 1 ? 's' : '') + ' at ' + TIME_LABELS[t];
+    }).join(', ');
+    var name = entry.keys[0];
+    html += '<div class="db-entry-row">';
+    html += '<div style="flex:1">';
+    html += '<div style="font-weight:500;font-size:14px;text-transform:capitalize">' + name + '</div>';
+    html += '<div style="font-size:12px;color:var(--ink-muted);margin-top:2px">' + dosesStr + '</div>';
+    html += '<div style="font-size:12px;color:var(--ink-soft);margin-top:3px;line-height:1.4">' + entry.typicalDosage + '</div>';
+    html += '</div>';
+    html += '<div style="display:flex;gap:6px;flex-shrink:0;margin-left:12px">';
+    html += '<button class="db-tab-btn" onclick="openCustomDbModalByIndex(' + idx + ')">Edit</button>';
+    html += '<button class="btn-del" onclick="deleteCustomDbEntry(' + idx + ')">Remove</button>';
+    html += '</div></div>';
+  });
+  el.innerHTML = html;
+}
+function openCustomDbModalByIndex(idx) {
+  if (idx >= 0 && idx < customDB.length) {
+    openCustomDbModal(customDB[idx].keys[0]);
+  }
+}
+
+
+// CONFIG — stored in localStorage
+// ═══════════════════════════════════════════════════════════════════
+let cfg = {};
+try { cfg = JSON.parse(localStorage.getItem('supp_cfg_v2') || '{}'); } catch(e) {}
+function saveCfg() { localStorage.setItem('supp_cfg_v2', JSON.stringify(cfg)); }
+
+// ═══════════════════════════════════════════════════════════════════
+// GOOGLE APPS SCRIPT API
+// ═══════════════════════════════════════════════════════════════════
+async function apiCall(action, body) {
+  const url = cfg.scriptUrl;
+  const secret = cfg.secret;
+  if (!url || !secret) throw new Error('Not configured');
+
+  // GET for ping and read — GET requests never trigger CORS preflight
+  // Apps Script allows GET from any origin automatically
+  if (action === 'ping' || action === 'read') {
+    const getUrl = url + '?action=' + encodeURIComponent(action) + '&secret=' + encodeURIComponent(secret);
+    const res = await fetch(getUrl, { method: 'GET', redirect: 'follow' });
+    if (!res.ok) throw new Error('Server error: ' + res.status);
+    const text = await res.text();
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Invalid response from script.');
+    const data = JSON.parse(match[0]);
+    if (data && data.error) throw new Error(data.error);
+    return data;
+  }
+
+  // POST with text/plain for writes
+  // text/plain is a "simple" content type — no CORS preflight triggered
+  // Works on Windows Chrome and iPhone Chrome/Safari
+  const payload = JSON.stringify({
+    action: action,
+    secret: secret,
+    supplements: (body && body.supplements) || []
+  });
+  const res = await fetch(url, {
+    method: 'POST',
+    redirect: 'follow',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: payload
+  });
+  if (!res.ok) throw new Error('Server error: ' + res.status);
+  const text = await res.text();
+  const match = text.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('Invalid response from script.');
+  const data = JSON.parse(match[0]);
+  if (data && data.error) throw new Error(data.error);
+  return data;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SYNC STATUS UI
+// ═══════════════════════════════════════════════════════════════════
+function setStatus(state, label) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.className = 'sync-dot ' + (state === 'ok' ? 'green' : state === 'busy' ? 'amber' : 'red');
+  lbl.textContent = label;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SETTINGS / WIZARD
+// ═══════════════════════════════════════════════════════════════════
+function openSettings() {
+  const urlField = document.getElementById('setup-url');
+  const secretField = document.getElementById('setup-secret');
+  const err = document.getElementById('wizard-err');
+  const testing = document.getElementById('wizard-testing');
+  if (urlField && cfg.scriptUrl) urlField.value = cfg.scriptUrl;
+  if (secretField && cfg.secret) secretField.value = cfg.secret;
+  if (err) err.style.display = 'none';
+  if (testing) testing.style.display = 'none';
+  document.getElementById('setup-wizard').style.display = '';
+  document.getElementById('app-content').style.display = 'none';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function saveSettings() {
+  const url = document.getElementById('setup-url').value.trim();
+  const secret = document.getElementById('setup-secret').value.trim();
+  const err = document.getElementById('wizard-err');
+  const testing = document.getElementById('wizard-testing');
+  err.style.display = 'none';
+
+  if (!url || !secret) {
+    err.textContent = 'Please enter both the Web App URL and your secret phrase.';
+    err.style.display = 'block'; return;
+  }
+  if (!url.startsWith('https://script.google.com/macros/s/')) {
+    err.textContent = 'That URL doesn\'t look right — it should start with https://script.google.com/macros/s/';
+    err.style.display = 'block'; return;
+  }
+
+  testing.style.display = 'block';
+  cfg.scriptUrl = url;
+  cfg.secret = secret;
+
+  try {
+    const res = await apiCall('ping', {});
+    if (!res.ok) throw new Error('Unexpected response');
+    saveCfg();
+    testing.style.display = 'none';
+    launchApp();
+    showToast('✓ Connected! Loading your supplements…', 'ok');
+    await pullAndRender();
+  } catch(e) {
+    testing.style.display = 'none';
+    cfg.scriptUrl = ''; cfg.secret = '';
+    err.textContent = 'Connection failed: ' + e.message + '. Check your URL and secret phrase match exactly what\'s in the script.';
+    err.style.display = 'block';
+  }
+}
+
+function launchApp() {
+  document.getElementById('setup-wizard').style.display = 'none';
+  document.getElementById('app-content').style.display = '';
+  setStatus('ok', 'Connected');
+  renderCustomDbList();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LOCAL STATE
+// ═══════════════════════════════════════════════════════════════════
+const TIME_LABELS = { fasted:'Morning fasted', breakfast:'With breakfast', lunch:'With lunch', dinner:'With dinner', bed:'Before bed' };
+const TIME_ICONS  = { fasted:'☀️', breakfast:'🍳', lunch:'🥗', dinner:'🌙', bed:'💤' };
+const TIME_ORDER  = ['fasted','breakfast','lunch','dinner','bed'];
+
+let supplements = [];
+try { supplements = JSON.parse(localStorage.getItem('supp_sched_v5') || '[]'); } catch(e) {}
+function saveLocal() { try { localStorage.setItem('supp_sched_v5', JSON.stringify(supplements)); } catch(e) {} }
+
+// Save locally AND push to sheet
+async function save() {
+  saveLocal();
+  if (!cfg.scriptUrl) return;
+  setStatus('busy', 'Saving…');
+  try {
+    await apiCall('write', { supplements });
+    setStatus('ok', 'Saved ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+  } catch(e) {
+    setStatus('red', 'Save failed');
+    showToast('Save failed: ' + e.message, 'err');
+  }
+}
+
+async function pullAndRender() {
+  setStatus('busy', 'Loading…');
+  try {
+    const data = await apiCall('read', {});
+    if (data.supplements && data.supplements.length > 0) {
+      supplements = data.supplements;
+      saveLocal();
+    }
+    setStatus('ok', 'Synced ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+    renderCurrentTab();
+  } catch(e) {
+    setStatus('red', 'Sync error');
+    showToast('Sync failed: ' + e.message, 'err');
+  }
+}
+
+async function manualSync() {
+  if (!cfg.scriptUrl) { openSettings(); return; }
+  const btn = document.getElementById('sync-btn');
+  btn.innerHTML = '<span class="spin"></span>Syncing…';
+  btn.disabled = true;
+  try {
+    await pullAndRender();
+    showToast('✓ Synced with Google Sheets', 'ok');
+  } catch(e) {
+    showToast('Sync failed: ' + e.message, 'err');
+  }
+  btn.innerHTML = '↻ Sync now';
+  btn.disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════════
+function showToast(msg, type) {
+  const t = document.getElementById('app-toast');
+  t.textContent = msg;
+  t.style.background = type === 'ok' ? '#1D6B5A' : type === 'err' ? '#8B2035' : '#2C4A6E';
+  t.style.color = 'white'; t.style.opacity = '1'; t.style.pointerEvents = 'auto';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity='0'; t.style.pointerEvents='none'; }, 3500);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// UI — FORM
+// ═══════════════════════════════════════════════════════════════════
+let currentSuggestion = null;
+
+function getTotalDailyPills(entry) { return Object.values(entry.doses||{}).reduce((a,b)=>a+b,0); }
+
+function applyEntryToForm(entry) {
+  document.querySelectorAll('.timing-opt').forEach(l => { l.querySelector('input').checked=false; l.className='timing-opt'; });
+  entry.timing.forEach(t => { const l=document.getElementById('lbl-'+t); if(l){l.querySelector('input').checked=true; l.classList.add('checked-'+t);} });
+  if (document.getElementById('bottle-toggle').checked) {
+    document.getElementById('pillsperdose').value = entry.doses[entry.timing[0]]||1;
+    document.getElementById('dosesperday').value = entry.timing.length;
+  }
+  if (!document.getElementById('dosage').value) document.getElementById('dosage').value = entry.typicalDosage;
+}
+
+function onSuppNameInput() {
+  const name = document.getElementById('suppname').value.trim();
+  const panel = document.getElementById('suggest-panel');
+  if (name.length < 3) {
+    panel.style.display='none'; currentSuggestion=null;
+    document.querySelectorAll('.timing-opt').forEach(l=>{l.querySelector('input').checked=false; l.className='timing-opt';});
+    const banner = document.getElementById('unknown-supp-banner');
+    if (banner) banner.style.display = 'none';
+    return;
+  }
+  const entry = lookupSuppWithCustom(name);
+  if (!entry) {
+    panel.style.display='none'; currentSuggestion=null;
+    // Show "Add to database" banner
+    let banner = document.getElementById('unknown-supp-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'unknown-supp-banner';
+      banner.className = 'custom-db-banner';
+      document.getElementById('suggest-panel').parentNode.insertBefore(banner, document.getElementById('suggest-panel').nextSibling);
+    }
+    banner.innerHTML = `<span>✦ "${name}" isn't in the database yet</span><button class="btn-add-to-db" onclick="openCustomDbModal('${name.replace(/'/g,"\\'")}')">+ Add to database</button>`;
+    banner.style.display = 'flex';
+    return;
+  }
+  // Hide banner if supplement is now recognised
+  const banner = document.getElementById('unknown-supp-banner');
+  if (banner) banner.style.display = 'none';
+  if (!currentSuggestion || currentSuggestion !== entry) { currentSuggestion=entry; applyEntryToForm(entry); }
+  const timingNames = entry.timing.map(t=>TIME_LABELS[t]).join(' · ');
+  const doseSlots = entry.timing.map(t=>{ const p=entry.doses[t]||1; return `${p} pill${p>1?'s':''} — ${TIME_LABELS[t]}`; }).join(' · ');
+  document.getElementById('suggest-body').innerHTML = `
+    <div class="suggest-row">
+      <span class="suggest-badge">${timingNames}</span>
+      <div>
+        <div class="suggest-text">${doseSlots} (${getTotalDailyPills(entry)} total/day)</div>
+        <div class="suggest-reason">${entry.timingReason}</div>
+      </div>
+    </div>`;
+  panel.style.display='';
+}
+
+function showTab(t, btn) {
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('sec-'+t).classList.add('active');
+  if (t==='schedule') renderSchedule();
+  if (t==='inventory') renderInventory();
+  if (t==='database') renderCustomDbList();
+}
+
+function renderCurrentTab() {
+  const a = document.querySelector('.section.active');
+  if (!a) return;
+  if (a.id==='sec-schedule') renderSchedule();
+  if (a.id==='sec-inventory') renderInventory();
+}
+
+function toggleTiming(lbl, val) {
+  const cb=lbl.querySelector('input'); cb.checked=!cb.checked;
+  if(cb.checked) lbl.classList.add('checked-'+val); else lbl.classList.remove('checked-'+val);
+}
+
+function toggleBottleFields() {
+  const on=document.getElementById('bottle-toggle').checked;
+  document.getElementById('bottle-fields').style.display=on?'':'none';
+  document.getElementById('bottle-skipped').style.display=on?'none':'';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ADD SUPPLEMENT
+// ═══════════════════════════════════════════════════════════════════
+async function addSupplement() {
+  const brand = document.getElementById('brand').value.trim();
+  const name  = document.getElementById('suppname').value.trim();
+  const dosage = document.getElementById('dosage').value.trim() || (currentSuggestion ? currentSuggestion.typicalDosage : '');
+  const trackBottle = document.getElementById('bottle-toggle').checked;
+  const bottlecount = trackBottle ? (parseInt(document.getElementById('bottlecount').value)||0) : null;
+  const purchasedate = trackBottle ? document.getElementById('purchasedate').value : null;
+  const timings = Array.from(document.querySelectorAll('.timing-opt input:checked')).map(c=>c.value);
+  const dosesMap = {};
+  timings.forEach(t => { dosesMap[t] = currentSuggestion?.doses?.[t] || 1; });
+  const totalPills = Object.values(dosesMap).reduce((a,b)=>a+b,0);
+
+  const msg = document.getElementById('add-msg');
+  const missingBottle = trackBottle && (!bottlecount || !purchasedate);
+  if (!name || !timings.length || missingBottle) {
+    msg.className='msg err';
+    msg.textContent = !name ? 'Please enter the supplement name.'
+      : !timings.length ? 'Supplement not recognised — select a timing manually.'
+      : 'Please fill in bottle details or turn off bottle tracking.';
+    msg.style.display='block'; setTimeout(()=>msg.style.display='none',3500); return;
+  }
+
+  supplements.push({ id:Date.now(), brand, name, dosage, bottlecount, purchasedate,
+    pillsperdose:totalPills||1, dosesperday:1, timings, dosesMap, trackBottle });
+  await save();
+
+  ['brand','suppname','dosage'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('suggest-panel').style.display='none'; currentSuggestion=null;
+  document.querySelectorAll('.timing-opt').forEach(l=>{l.querySelector('input').checked=false; l.className='timing-opt';});
+  if (trackBottle) { document.getElementById('bottlecount').value=''; document.getElementById('purchasedate').valueAsDate=new Date(); document.getElementById('pillsperdose').value='1'; document.getElementById('dosesperday').value='1'; }
+  msg.className='msg ok'; msg.textContent=name+' added and synced!'; msg.style.display='block'; setTimeout(()=>msg.style.display='none',3000);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SCHEDULE
+// ═══════════════════════════════════════════════════════════════════
+function calcReorder(s) {
+  if (!s.trackBottle||!s.bottlecount||!s.purchasedate) return {text:'Not tracked',cls:'reorder-pending'};
+  const daily = s.dosesMap ? Object.values(s.dosesMap).reduce((a,b)=>a+b,0) : (s.pillsperdose||1)*(s.dosesperday||1);
+  if (!daily) return {text:'—',cls:''};
+  const days = Math.round(s.bottlecount/daily);
+  const rd = new Date(s.purchasedate); rd.setDate(rd.getDate()+days);
+  const left = Math.round((rd-new Date())/86400000);
+  const fmt = rd.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  if (left<0) return {text:'Overdue — reorder now',cls:'reorder-overdue'};
+  if (left<=14) return {text:fmt+' ('+left+'d left)',cls:'reorder-soon'};
+  return {text:fmt+' ('+left+'d)',cls:'reorder-ok'};
+}
+
+function getRecCell(s, time) {
+  const entry = lookupSuppWithCustom(s.name);
+  const pills = s.dosesMap?.[time] || entry?.doses?.[time] || s.pillsperdose || 1;
+  let html = `<div class="rec-pill-line">${pills} pill${pills!==1?'s':''}</div>`;
+  if (entry) html += `<div class="rec-reason">${entry.typicalDosage}</div>`;
+  return html;
+}
+
+function renderSchedule() {
+  const el = document.getElementById('schedule-content');
+  if (!supplements.length) { el.innerHTML='<div class="empty"><span class="icon">📋</span>No supplements yet. Go to "Add supplement" to get started.</div>'; return; }
+  let html='';
+  for (const time of TIME_ORDER) {
+    const items = supplements.filter(s=>s.timings.includes(time));
+    if (!items.length) continue;
+    html += `<div class="time-block"><div class="time-block-header"><div class="time-icon icon-${time}">${TIME_ICONS[time]}</div><span class="time-title">${TIME_LABELS[time]}</span><span class="time-count">&nbsp;·&nbsp;${items.length} supplement${items.length>1?'s':''}</span></div><div class="sched-table-wrap"><table class="sched-table"><colgroup><col style="width:18%"><col style="width:13%"><col style="width:34%"><col style="width:21%"></colgroup><thead><tr><th>Supplement</th><th>Dosing</th><th>Key benefits</th><th>Reorder date</th></tr></thead><tbody>`;
+    for (const s of items) {
+      const r=calcReorder(s);
+      const dosageDiv = s.dosage ? '<div style="font-size:11px;color:var(--ink-muted);margin-top:2px">' + s.dosage + '</div>' : ''; html += '<tr><td><div class="supp-name-cell">' + s.name + '</div><div class="supp-brand-cell">' + s.brand + '</div>' + dosageDiv + '</td><td class="rec-cell">' + getRecCell(s,time) + '</td><td style="font-size:12px;color:var(--ink-soft);line-height:1.6">' + getBenefitsWithCustom(s.name) + '</td><td><span class="' + r.cls + '">' + r.text + '</span></td></tr>';
+    }
+    html+='</tbody></table></div></div>';
+  }
+  el.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INVENTORY
+// ═══════════════════════════════════════════════════════════════════
+function renderInventory() {
+  const el=document.getElementById('inventory-content');
+  if (!supplements.length) { el.innerHTML='<div class="empty"><span class="icon">📦</span>No supplements in inventory yet.</div>'; return; }
+  let html=`<div style="overflow-x:auto"><table class="inv-table" style="min-width:620px"><thead><tr><th style="width:18%">Supplement</th><th style="width:9%">Brand</th><th style="width:14%">Dosage</th><th style="width:11%">Bottle</th><th style="width:10%">Purchased</th><th style="width:18%">Schedule</th><th style="width:13%">Reorder</th><th style="width:7%"></th></tr></thead><tbody>`;
+  for (const s of supplements) {
+    const r=calcReorder(s);
+    const chips=s.timings.map(t=>`<span class="timing-chip chip-${t}">${TIME_LABELS[t]}</span>`).join('');
+    const entry=lookupSuppWithCustom(s.name);
+    const recDosage=entry?entry.typicalDosage:'—';
+    const bottleInfo=s.trackBottle&&s.bottlecount
+      ?`${s.pillsperdose}p/day<br><span style="font-size:11px;color:var(--ink-muted)">${s.bottlecount}/bottle</span>`
+      :`<span style="font-size:12px;color:var(--ink-muted);font-style:italic">Not set</span><br><button class="btn-sm" style="margin-top:4px;font-size:11px;color:var(--teal);border-color:var(--teal)" onclick="showBottleForm(${s.id})">+ Add details</button>`;
+    const purchaseInfo=s.purchasedate?new Date(s.purchasedate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'<span style="font-size:12px;color:var(--ink-muted)">—</span>';
+    html+=`<tr id="inv-row-${s.id}">
+      <td style="font-weight:500">${s.name}</td>
+      <td>${s.brand}</td>
+      <td><div>${s.dosage||'<span style="color:var(--ink-muted);font-style:italic;font-size:12px">not set</span>'}</div><div style="font-size:11px;color:var(--ink-muted);margin-top:2px">Typical: ${recDosage}</div></td>
+      <td>${bottleInfo}</td><td>${purchaseInfo}</td><td>${chips}</td>
+      <td><span class="${r.cls}">${r.text}</span></td>
+      <td><button class="btn-del" onclick="removeSupplement(${s.id})">Remove</button></td>
+    </tr>
+    <tr id="bottle-form-${s.id}" style="display:none">
+      <td colspan="8" style="background:var(--cream);padding:14px 16px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px">Add bottle details for <em>${s.name}</em></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end">
+          <div class="form-group"><label>Pills per bottle</label><input type="number" id="upd-bottle-${s.id}" placeholder="90" min="1"></div>
+          <div class="form-group"><label>Purchase date</label><input type="date" id="upd-date-${s.id}"></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-add" style="margin-top:0;padding:9px 16px" onclick="saveBottleDetails(${s.id})">Save</button>
+            <button class="btn-sm" style="padding:9px 12px" onclick="document.getElementById('bottle-form-${s.id}').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  }
+  html+='</tbody></table></div>';
+  el.innerHTML=html;
+}
+
+function showBottleForm(id) {
+  document.querySelectorAll('[id^="bottle-form-"]').forEach(r=>r.style.display='none');
+  const row=document.getElementById('bottle-form-'+id);
+  if(row){row.style.display='';const d=document.getElementById('upd-date-'+id);if(d&&!d.value)d.valueAsDate=new Date();}
+}
+
+async function saveBottleDetails(id) {
+  const s=supplements.find(x=>x.id===id); if(!s) return;
+  const bottlecount=parseInt(document.getElementById('upd-bottle-'+id).value)||0;
+  const purchasedate=document.getElementById('upd-date-'+id).value;
+  if(!bottlecount||!purchasedate){alert('Please enter bottle count and purchase date.');return;}
+  const totalDaily=s.dosesMap?Object.values(s.dosesMap).reduce((a,b)=>a+b,0):(s.pillsperdose||1);
+  s.bottlecount=bottlecount;s.purchasedate=purchasedate;s.pillsperdose=totalDaily;s.dosesperday=1;s.trackBottle=true;
+  await save(); renderInventory();
+}
+
+async function removeSupplement(id) {
+  if(!confirm('Remove this supplement?')) return;
+  supplements=supplements.filter(s=>s.id!==id);
+  await save(); renderInventory();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+function initApp() {
+  document.getElementById('purchasedate').valueAsDate = new Date();
+  if (cfg.scriptUrl && cfg.secret) {
+    launchApp();
+    pullAndRender();
+    setInterval(() => pullAndRender(), 5 * 60 * 1000);
+  } else {
+    document.getElementById('setup-wizard').style.display = '';
+    setStatus('red', 'Not connected');
+  }
+}
+
+// Check login on page load
+(function() {
+  if (checkLogin()) {
+    initApp();
+  }
+})();
+
+// ═══════════════════════════════════════════════════════════════════
+// LOGIN
+</script>
+</body>
+</html>
